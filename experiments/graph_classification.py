@@ -88,7 +88,7 @@ class Experiment:
         validation_loader = DataLoader(self.validation_dataset, batch_size=self.args.batch_size, shuffle=True)
         test_loader = DataLoader(self.test_dataset, batch_size=self.args.batch_size, shuffle=True)
         # complete_loader = DataLoader(self.dataset, batch_size=self.args.batch_size, shuffle=True)
-        complete_loader = DataLoader(self.dataset, batch_size=len(self.dataset))
+        complete_loader = DataLoader(self.dataset, batch_size=1)
 
         # create a dictionary of the graphs in the dataset with the key being the graph index
         graph_dict = {}
