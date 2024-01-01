@@ -327,8 +327,8 @@ for key in datasets:
         validation_accuracies.append(validation_acc)
         test_accuracies.append(test_acc)
         energies.append(energy)
-        for key in dictionary:
-            graph_dict[key].append(dictionary[key])
+        for name in dictionary:
+            graph_dict[name].append(dictionary[name])
     end = time.time()
     run_duration = end - start
 
