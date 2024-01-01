@@ -157,8 +157,8 @@ class Experiment:
 
                         # evaluate the model on all graphs in the dataset
                         # and record the error for each graph in the dictionary
-                        for i in range(len(self.dataset)):
-                            graph = self.dataset[i].to(self.args.device)
+                        for graph, i in zip(complete_loader, range(len(self.dataset))):
+                            graph = graph.to(self.args.device)
                             y = graph.y.to(self.args.device)
                             out = self.model(graph)
                             _, pred = out.max(dim=1)
