@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from measure_smoothing import dirichlet_normalized
+# from measure_smoothing import dirichlet_normalized
 from attrdict import AttrDict
 from torch_geometric.loader import DataLoader
 from torch.utils.data import random_split
