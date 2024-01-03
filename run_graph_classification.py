@@ -183,6 +183,7 @@ for key in datasets:
         dataset = datasets[key]
 
 
+    """
     # dataset encodings
     print('ENCODING STARTED...')
 
@@ -204,8 +205,8 @@ for key in datasets:
         # transform = T.RootedRWSubgraph(walk_length=10)
         # print("Encoding Rooted RW Subgraph")
 
-        transform = T.LocalDegreeProfile()
-        print("Encoding Local Degree Profile")
+        # transform = T.LocalDegreeProfile()
+        # print("Encoding Local Degree Profile")
 
         # transform = T.Compose([T.RootedRWSubgraph(walk_length=10), T.AddRandomWalkPE(walk_length=16)])
         # print("Encoding Rooted RW Subgraph + Random Walk PE")
@@ -234,6 +235,7 @@ for key in datasets:
 
     # save the dataset to a file in the data folder
     # torch.save(dataset, f"data/{key}_encoded.pt")
+    """
 
 
     """
@@ -331,9 +333,9 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_ldp_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
-        print(f"Graph dictionary for {key} with LDP pickled")
+        print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
