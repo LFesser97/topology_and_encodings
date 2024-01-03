@@ -89,9 +89,10 @@ with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_bound
 # proteins_encoded = torch.load("data/proteins_encoded.pt")
 # print("IMDB ENCODED LOADED")
 
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 
-# datasets = {"mutag": mutag, "enzymes": enzymes, "imdb": imdb}
+datasets = {"proteins": proteins, "imdb": imdb}
+
 
 for key in datasets:
     if key in ["reddit", "imdb", "collab"]:
