@@ -196,14 +196,14 @@ for key in datasets:
         num_nodes = dataset[i].num_nodes
         eigvecs = np.min([num_nodes, 10]) - 2
 
-        # transform = T.AddRandomWalkPE(walk_length=16)
-        # print("Encoding Random Walk PE")
+        transform = T.AddRandomWalkPE(walk_length=16)
+        print("Encoding Random Walk PE")
 
         # transform = T.AddLaplacianEigenvectorPE(k=8)
         # print("Encoding Laplacian Eigenvector PE")
 
-        transform = T.RootedRWSubgraph(walk_length=10)
-        print("Encoding Rooted RW Subgraph")
+        # transform = T.RootedRWSubgraph(walk_length=10)
+        # print("Encoding Rooted RW Subgraph")
 
         # transform = T.LocalDegreeProfile()
         # print("Encoding Local Degree Profile")
@@ -333,9 +333,9 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_sub_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_rwpe_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
-        print(f"Graph dictionary for {key} with SUB pickled")
+        print(f"Graph dictionary for {key} with RWPE pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
