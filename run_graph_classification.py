@@ -218,7 +218,12 @@ for key in datasets:
         # print(f"Encoding Local Curvature Profile (ORC) for graph {current_graph} of {org_dataset_len}")
 
         # dataset[i] = lcp.compute_orc(dataset[i])
-        dataset[i] = transform(dataset[i])
+        try:
+            dataset[i] = transform(dataset[i])
+
+        except:
+            transform = T.AddLaplacianEigenvectorPE(k=1)
+            dataset[i] = transform(dataset[i])
 
         current_graph += 1
 
