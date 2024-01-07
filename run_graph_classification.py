@@ -199,7 +199,7 @@ for key in datasets:
         # transform = T.AddRandomWalkPE(walk_length=16)
         # print("Encoding Random Walk PE")
 
-        transform = T.AddLaplacianEigenvectorPE(k=eigvecs)
+        transform = T.AddLaplacianEigenvectorPE(k=2)
         print("Encoding Laplacian Eigenvector PE")
 
         # transform = T.RootedRWSubgraph(walk_length=10)
