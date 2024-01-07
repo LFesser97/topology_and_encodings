@@ -91,7 +91,7 @@ with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_bound
 
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins}
+datasets = {"enzymes": enzymes, "proteins": proteins}
 
 
 for key in datasets:
