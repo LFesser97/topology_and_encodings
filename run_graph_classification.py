@@ -91,7 +91,7 @@ with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_bound
 
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 
-datasets = {"enzymes": enzymes, "proteins": proteins}
+datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins}
 
 
 for key in datasets:
@@ -183,7 +183,7 @@ for key in datasets:
     else:
         dataset = datasets[key]
 
-    
+    """
     # dataset encodings
     print('ENCODING STARTED...')
 
@@ -199,8 +199,8 @@ for key in datasets:
         # transform = T.AddRandomWalkPE(walk_length=16)
         # print("Encoding Random Walk PE")
 
-        transform = T.AddLaplacianEigenvectorPE(k=2)
-        print("Encoding Laplacian Eigenvector PE")
+        # transform = T.AddLaplacianEigenvectorPE(k=2)
+        # print("Encoding Laplacian Eigenvector PE")
 
         # transform = T.RootedRWSubgraph(walk_length=10)
         # print("Encoding Rooted RW Subgraph")
@@ -218,14 +218,10 @@ for key in datasets:
         # print(f"Encoding Local Curvature Profile (ORC) for graph {current_graph} of {org_dataset_len}")
 
         # dataset[i] = lcp.compute_orc(dataset[i])
-        try:
-            dataset[i] = transform(dataset[i])
-
-        except:
-            transform = T.AddLaplacianEigenvectorPE(k=1)
-            dataset[i] = transform(dataset[i])
+        dataset[i] = transform(dataset[i])
 
         current_graph += 1
+    """
 
     """
         except:
@@ -338,9 +334,9 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_lape_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_gin_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
-        print(f"Graph dictionary for {key} with LAPE pickled")
+        print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
