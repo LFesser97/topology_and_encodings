@@ -89,9 +89,9 @@ with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_bound
 # proteins_encoded = torch.load("data/proteins_encoded.pt")
 # print("IMDB ENCODED LOADED")
 
-# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins}
+# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins}
 
 
 for key in datasets:
@@ -183,7 +183,6 @@ for key in datasets:
     else:
         dataset = datasets[key]
 
-    """
     # dataset encodings
     print('ENCODING STARTED...')
 
@@ -205,8 +204,8 @@ for key in datasets:
         # transform = T.RootedRWSubgraph(walk_length=10)
         # print("Encoding Rooted RW Subgraph")
 
-        # transform = T.LocalDegreeProfile()
-        # print("Encoding Local Degree Profile")
+        transform = T.LocalDegreeProfile()
+        print("Encoding Local Degree Profile")
 
         # transform = T.Compose([T.RootedRWSubgraph(walk_length=10), T.AddRandomWalkPE(walk_length=16)])
         # print("Encoding Rooted RW Subgraph + Random Walk PE")
@@ -221,7 +220,6 @@ for key in datasets:
         dataset[i] = transform(dataset[i])
 
         current_graph += 1
-    """
 
     """
         except:
@@ -334,9 +332,9 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_gin_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_gin_ldp_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
-        print(f"Graph dictionary for {key} pickled")
+        print(f"Graph dictionary for {key} with LDP pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
