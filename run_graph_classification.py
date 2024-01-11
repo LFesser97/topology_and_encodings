@@ -182,7 +182,8 @@ for key in datasets:
 
     else:
         dataset = datasets[key]
-
+    
+    """
     # dataset encodings
     print('ENCODING STARTED...')
 
@@ -221,7 +222,7 @@ for key in datasets:
 
         current_graph += 1
 
-    """
+    
         except:
             print(f"Graph {current_graph} of {org_dataset_len} dropped due to encoding error")
             drop_datasets.append(i)
@@ -332,9 +333,9 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_gin_lcp_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_gat_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
-        print(f"Graph dictionary for {key} with LCP pickled")
+        print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
