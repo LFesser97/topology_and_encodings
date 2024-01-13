@@ -183,7 +183,7 @@ for key in datasets:
     else:
         dataset = datasets[key]
     
-    """
+    
     # dataset encodings
     print('ENCODING STARTED...')
 
@@ -205,8 +205,8 @@ for key in datasets:
         # transform = T.RootedRWSubgraph(walk_length=10)
         # print("Encoding Rooted RW Subgraph")
 
-        # transform = T.LocalDegreeProfile()
-        # print("Encoding Local Degree Profile")
+        transform = T.LocalDegreeProfile()
+        print("Encoding Local Degree Profile")
 
         # transform = T.Compose([T.RootedRWSubgraph(walk_length=10), T.AddRandomWalkPE(walk_length=16)])
         # print("Encoding Rooted RW Subgraph + Random Walk PE")
@@ -214,15 +214,15 @@ for key in datasets:
         # transform = T.Compose([T.RootedRWSubgraph(walk_length=10), T.AddLaplacianEigenvectorPE(k=8)])
         # print("Encoding Rooted RW Subgraph + Laplacian Eigenvector PE")
       
-        lcp = LocalCurvatureProfile()
-        print(f"Encoding Local Curvature Profile (ORC) for graph {current_graph} of {org_dataset_len}")
+        # lcp = LocalCurvatureProfile()
+        # print(f"Encoding Local Curvature Profile (ORC) for graph {current_graph} of {org_dataset_len}")
 
-        dataset[i] = lcp.compute_orc(dataset[i])
-        # dataset[i] = transform(dataset[i])
+        # dataset[i] = lcp.compute_orc(dataset[i])
+        dataset[i] = transform(dataset[i])
 
         current_graph += 1
 
-    
+    """
         except:
             print(f"Graph {current_graph} of {org_dataset_len} dropped due to encoding error")
             drop_datasets.append(i)
@@ -333,7 +333,7 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_gat_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_gat_ldp_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
         print(f"Graph dictionary for {key} pickled")
 
