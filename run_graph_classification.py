@@ -333,7 +333,7 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_gat_lcp_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_{args.layer_type}_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
         print(f"Graph dictionary for {key} pickled")
 
