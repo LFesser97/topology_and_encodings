@@ -196,7 +196,7 @@ for key in datasets:
             print('ENCODING STARTED...')
             lcp = LocalCurvatureProfile()
             for i in range(len(dataset)):
-                dataset[i] = lcp(dataset[i])
+                dataset[i] = lcp.compute_orc(dataset[i])
                 print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
             torch.save(dataset, f"data/{key}_{args.encoding}.pt")
 
