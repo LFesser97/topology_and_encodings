@@ -142,7 +142,8 @@ default_args = AttrDict({
     "last_layer_fa": False,
     "borf_batch_add" : 4,
     "borf_batch_remove" : 2,
-    "sdrf_remove_edges" : False
+    "sdrf_remove_edges" : False,
+    "encoding" : None
 })
 
 hyperparams = {
@@ -184,58 +185,53 @@ for key in datasets:
         dataset = datasets[key]
     
     
-    # dataset encodings
-    print('ENCODING STARTED...')
+    # encode the dataset using the given encoding, if args.encoding is not None
+    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB"]:
 
-    org_dataset_len = len(dataset)
-    drop_datasets = []
+        if os.path.exists(f"data/{key}_{args.encoding}.pt"):
+            print('ENCODING ALREADY COMPLETED...')
+            dataset = torch.load(f"data/{key}_{args.encoding}.pt")
 
-    current_graph = 0
+        else:
+            print('ENCODING STARTED...')
+            org_dataset_len = len(dataset)
+            drop_datasets = []
+            current_graph = 0
 
-    for i in range(org_dataset_len):
-        num_nodes = dataset[i].num_nodes
-        eigvecs = np.min([num_nodes, 10]) - 2
+            for i in range(org_dataset_len):
+                if args.encoding == "LAPE":
+                    num_nodes = dataset[i].num_nodes
+                    eigvecs = np.min([num_nodes, 8]) - 2
+                    transform = T.AddLaplacianEigenvectorPE(k=eigvecs)
 
-        # transform = T.AddRandomWalkPE(walk_length=16)
-        # print("Encoding Random Walk PE")
+                elif args.encoding == "RWPE":
+                    transform = T.AddRandomWalkPE(walk_length=16)
 
-        # transform = T.AddLaplacianEigenvectorPE(k=2)
-        # print("Encoding Laplacian Eigenvector PE")
+                elif args.encoding == "LCP":
+                    lcp = LocalCurvatureProfile()
+                    transform = lcp.compute_orc()
 
-        # transform = T.RootedRWSubgraph(walk_length=10)
-        # print("Encoding Rooted RW Subgraph")
+                elif args.encoding == "LDP":
+                    transform = T.LocalDegreeProfile()
 
-        # transform = T.LocalDegreeProfile()
-        # print("Encoding Local Degree Profile")
+                elif args.encoding == "SUB":
+                    transform = T.RootedRWSubgraph(walk_length=10)
 
-        # transform = T.Compose([T.RootedRWSubgraph(walk_length=10), T.AddRandomWalkPE(walk_length=16)])
-        # print("Encoding Rooted RW Subgraph + Random Walk PE")
+                try:
+                    dataset[i] = transform(dataset[i])
+                    print(f"Graph {current_graph} of {org_dataset_len} encoded with {args.encoding}")
+                    current_graph += 1
 
-        # transform = T.Compose([T.RootedRWSubgraph(walk_length=10), T.AddLaplacianEigenvectorPE(k=8)])
-        # print("Encoding Rooted RW Subgraph + Laplacian Eigenvector PE")
-      
-        lcp = LocalCurvatureProfile()
-        print(f"Encoding Local Curvature Profile (ORC) for graph {current_graph} of {org_dataset_len}")
+                except:
+                    print(f"Graph {current_graph} of {org_dataset_len} dropped due to encoding error")
+                    drop_datasets.append(i)
+                    current_graph += 1
 
-        dataset[i] = lcp.compute_orc(dataset[i])
-        # dataset[i] = transform(dataset[i])
+            for i in sorted(drop_datasets, reverse=True):
+                dataset.pop(i)
 
-        current_graph += 1
-
-    """
-        except:
-            print(f"Graph {current_graph} of {org_dataset_len} dropped due to encoding error")
-            drop_datasets.append(i)
-            current_graph += 1
-             
-
-    # drop the graphs that were dropped in the encoding process
-    for i in sorted(drop_datasets, reverse=True):
-        dataset.pop(i)
-
-    # save the dataset to a file in the data folder
-    # torch.save(dataset, f"data/{key}_encoded.pt")
-    """
+            # save the dataset to a file in the data folder
+            torch.save(dataset, f"data/{key}_{args.encoding}.pt")
 
 
     """
@@ -333,7 +329,7 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file
-    with open(f"results/{key}_{args.layer_type}_graph_dict.pickle", "wb") as f:
+    with open(f"results/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
         pickle.dump(graph_dict, f)
         print(f"Graph dictionary for {key} pickled")
 
