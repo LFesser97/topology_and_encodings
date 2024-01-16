@@ -192,6 +192,14 @@ for key in datasets:
             print('ENCODING ALREADY COMPLETED...')
             dataset = torch.load(f"data/{key}_{args.encoding}.pt")
 
+        elif args.encoding == "LCP":
+            print('ENCODING STARTED...')
+            lcp = LocalCurvatureProfile()
+            for i in range(len(dataset)):
+                dataset[i] = lcp(dataset[i])
+                print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
+            torch.save(dataset, f"data/{key}_{args.encoding}.pt")
+
         else:
             print('ENCODING STARTED...')
             org_dataset_len = len(dataset)
@@ -206,10 +214,6 @@ for key in datasets:
 
                 elif args.encoding == "RWPE":
                     transform = T.AddRandomWalkPE(walk_length=16)
-
-                elif args.encoding == "LCP":
-                    lcp = LocalCurvatureProfile()
-                    transform = lcp.compute_orc()
 
                 elif args.encoding == "LDP":
                     transform = T.LocalDegreeProfile()
