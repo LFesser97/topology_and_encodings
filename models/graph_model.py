@@ -91,8 +91,9 @@ class GNN(torch.nn.Module):
                 x_new = self.act_fn(x_new)
                 x_new = self.dropout(x_new)
             if i == self.num_layers - 1 and self.args.last_layer_fa:
-                # combined_values = global_mean_pool(x, batch)
-                combined_values = global_max_pool(x, batch)
+                combined_values = global_mean_pool(x, batch)
+                # combined_values = global_max_pool(x, batch)
+                # print("Using global max pooling."
                 combined_values = self.last_layer_transform(combined_values)
                 if self.layer_type in ["R-GCN", "R-GIN"]:
                     x_new += combined_values[batch]
