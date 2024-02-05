@@ -336,7 +336,7 @@ for key in datasets:
 
     # pickle the graph dictionary in a new file depending on the number of layers 
     if args.num_layers == 4:
-        with open(f"results/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+        with open(f"results/{key}_max_pool_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
             print(f"Graph dictionary for {key} pickled")
 

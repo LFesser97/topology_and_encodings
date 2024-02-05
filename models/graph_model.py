@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from measure_smoothing import dirichlet_normalized
 from torch.nn import ModuleList, Dropout, ReLU
-from torch_geometric.nn import GCNConv, RGCNConv, SAGEConv, GatedGraphConv, GINConv, FiLMConv, global_mean_pool, GATConv, SuperGATConv
+from torch_geometric.nn import GCNConv, RGCNConv, SAGEConv, GatedGraphConv, GINConv, FiLMConv, global_mean_pool, GATConv, SuperGATConv, global_max_pool
 
 class RGATConv(torch.nn.Module):
     def __init__(self, in_features, out_features, num_relations):
@@ -91,7 +91,8 @@ class GNN(torch.nn.Module):
                 x_new = self.act_fn(x_new)
                 x_new = self.dropout(x_new)
             if i == self.num_layers - 1 and self.args.last_layer_fa:
-                combined_values = global_mean_pool(x, batch)
+                # combined_values = global_mean_pool(x, batch)
+                combined_values = global_max_pool(x, batch)
                 combined_values = self.last_layer_transform(combined_values)
                 if self.layer_type in ["R-GCN", "R-GIN"]:
                     x_new += combined_values[batch]
