@@ -7,7 +7,7 @@ from torch.utils.data import random_split
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from math import inf
 
-from models.graph_model import GNN
+from models.graph_model import GNN #, transformer
 
 default_args = AttrDict(
     {"learning_rate": 1e-3,
@@ -59,6 +59,11 @@ class Experiment:
                 self.args.num_relations = 1
             else:
                 self.args.num_relations = 2
+
+        # if self.args.layer_type == "transformer":
+        #     self.model = transformer(self.args).to(self.args.device)
+        # else:
+        #     self.model = GNN(self.args).to(self.args.device)
 
         self.model = GNN(self.args).to(self.args.device)
        
