@@ -224,7 +224,7 @@ for key in datasets:
                     transform = T.RootedRWSubgraph(walk_length=10)
 
                 elif args.encoding == "EGO":
-                    transform = T.RootedEgoGraph(num_hops=2)
+                    transform = T.RootedEgoNets(num_hops=2)
 
                 try:
                     dataset[i] = transform(dataset[i])
