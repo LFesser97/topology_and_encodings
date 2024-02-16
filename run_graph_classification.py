@@ -188,7 +188,7 @@ for key in datasets:
     
     
     # encode the dataset using the given encoding, if args.encoding is not None
-    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB"]:
+    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO"]:
 
         if os.path.exists(f"data/{key}_{args.encoding}.pt"):
             print('ENCODING ALREADY COMPLETED...')
@@ -222,6 +222,9 @@ for key in datasets:
 
                 elif args.encoding == "SUB":
                     transform = T.RootedRWSubgraph(walk_length=10)
+
+                elif args.encoding == "EGO":
+                    transform = T.RootedEgoGraph(num_hops=2)
 
                 try:
                     dataset[i] = transform(dataset[i])
