@@ -95,7 +95,7 @@ class Experiment:
         validation_loader = DataLoader(self.validation_dataset, batch_size=self.args.batch_size, shuffle=True)
         test_loader = DataLoader(self.test_dataset, batch_size=self.args.batch_size, shuffle=True)
         # complete_loader = DataLoader(self.dataset, batch_size=self.args.batch_size, shuffle=True)
-        # complete_loader = DataLoader(self.dataset, batch_size=1)
+        complete_loader = DataLoader(self.dataset, batch_size=1)
 
         # create a dictionary of the graphs in the dataset with the key being the graph index
         graph_dict = {}
@@ -174,7 +174,8 @@ class Experiment:
                             graph_dict[i] = pred.eq(y).sum().item()
                         """
                         for index in self.categories[2]:
-                            graph = self.dataset[index].to(self.args.device)
+                            # graph = self.dataset[index].to(self.args.device)
+                            graph = complete_loader.dataset[index].to(self.args.device)
                             y = graph.y.to(self.args.device)
                             out = self.model(graph)
                             _, pred = out.max(dim=1)
