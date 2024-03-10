@@ -7,6 +7,9 @@ from torch.utils.data import random_split
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from math import inf
 
+import random
+from torch.utils.data import Dataset, Subset
+
 from models.graph_model import GNN #, transformer
 
 default_args = AttrDict(
@@ -43,6 +46,7 @@ class Experiment:
         self.validation_dataset = validation_dataset
         self.test_dataset = test_dataset
         self.loss_fn = torch.nn.CrossEntropyLoss()
+        self.categories = None
 
         if self.args.device is None:
             self.args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -60,10 +64,6 @@ class Experiment:
             else:
                 self.args.num_relations = 2
 
-        # if self.args.layer_type == "transformer":
-        #     self.model = transformer(self.args).to(self.args.device)
-        # else:
-        #     self.model = GNN(self.args).to(self.args.device)
 
         self.model = GNN(self.args).to(self.args.device)
        
@@ -72,8 +72,10 @@ class Experiment:
             train_size = int(self.args.train_fraction * dataset_size)
             validation_size = int(self.args.validation_fraction * dataset_size)
             test_size = dataset_size - train_size - validation_size
-            self.train_dataset, self.validation_dataset, self.test_dataset = random_split(self.dataset,[train_size, validation_size, test_size])
+            # self.train_dataset, self.validation_dataset, self.test_dataset = random_split(self.dataset,[train_size, validation_size, test_size])
+            self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
         elif self.validation_dataset is None:
+            print("self.validation_dataset is None. Custom split will not be used.")
             train_size = int(self.args.train_fraction * len(self.train_dataset))
             validation_size = len(self.args.train_data) - train_size
             self.args.train_data, self.args.validation_data = random_split(self.args.train_data, [train_size, validation_size])
@@ -93,12 +95,12 @@ class Experiment:
         validation_loader = DataLoader(self.validation_dataset, batch_size=self.args.batch_size, shuffle=True)
         test_loader = DataLoader(self.test_dataset, batch_size=self.args.batch_size, shuffle=True)
         # complete_loader = DataLoader(self.dataset, batch_size=self.args.batch_size, shuffle=True)
-        complete_loader = DataLoader(self.dataset, batch_size=1)
+        # complete_loader = DataLoader(self.dataset, batch_size=1)
 
         # create a dictionary of the graphs in the dataset with the key being the graph index
         graph_dict = {}
         for i in range(len(self.dataset)):
-            graph_dict[i] = 0
+            graph_dict[i] = -1
 
         for epoch in range(1, 1 + self.args.max_epochs):
             self.model.train()
@@ -163,13 +165,21 @@ class Experiment:
 
                         # evaluate the model on all graphs in the dataset
                         # and record the error for each graph in the dictionary
+                        """
                         for graph, i in zip(complete_loader, range(len(self.dataset))):
                             graph = graph.to(self.args.device)
                             y = graph.y.to(self.args.device)
                             out = self.model(graph)
                             _, pred = out.max(dim=1)
                             graph_dict[i] = pred.eq(y).sum().item()
-                        print("Computed error for each graph in the dataset")
+                        """
+                        for index in self.categories[2]:
+                            graph = self.dataset[index].to(self.args.device)
+                            y = graph.y.to(self.args.device)
+                            out = self.model(graph)
+                            _, pred = out.max(dim=1)
+                            graph_dict[index] = pred.eq(y).sum().item()
+                        print("Computed error for each graph in the test dataset")
 
                     return best_train_acc, best_validation_acc, best_test_acc, energy, graph_dict
                 
@@ -203,3 +213,28 @@ class Experiment:
                 graph = graph.to(self.args.device)
                 total_energy += self.model(graph, measure_dirichlet=True)
         return total_energy / sample_size
+
+
+def custom_random_split(dataset, percentages):
+    percentages = [100 * percentage for percentage in percentages]
+    if sum(percentages) != 100:
+        raise ValueError("Percentages must sum to 100")
+    
+    # Calculate the lengths of the three categories
+    total_length = len(dataset)
+    lengths = [int(total_length * p / 100) for p in percentages]
+    
+    # Shuffle the input list
+    shuffled_list = [*range(total_length)]
+    random.shuffle(shuffled_list)
+    
+    # Split the shuffled list into three categories
+    categories = [shuffled_list[:lengths[0]],
+                  shuffled_list[lengths[0]:lengths[0]+lengths[1]],
+                  shuffled_list[lengths[0]+lengths[1]:]]
+    
+    train_dataset = Subset(dataset, categories[0])
+    validation_dataset = Subset(dataset, categories[1])
+    test_dataset = Subset(dataset, categories[2])
+    
+    return train_dataset, validation_dataset, test_dataset, categories

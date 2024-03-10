@@ -332,8 +332,9 @@ for key in datasets:
         validation_accuracies.append(validation_acc)
         test_accuracies.append(test_acc)
         energies.append(energy)
-        for name in dictionary:
-            graph_dict[name].append(dictionary[name])
+        for name in dictionary.keys():
+            if dictionary[name] != -1:
+                graph_dict[name].append(dictionary[name])
     end = time.time()
     run_duration = end - start
 
