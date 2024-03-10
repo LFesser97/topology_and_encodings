@@ -175,7 +175,7 @@ class Experiment:
                         """
                         for index in self.categories[2]:
                             # graph = self.dataset[index].to(self.args.device)
-                            graph = complete_loader.dataset[index].to(self.args.device)
+                            graph = complete_loader[index].to(self.args.device)
                             y = graph.y.to(self.args.device)
                             out = self.model(graph)
                             _, pred = out.max(dim=1)
