@@ -213,13 +213,31 @@ def calculate_distances_parallel(dataset):
 
 def create_distance_matrix(distances):
     distance_matrix = pd.DataFrame(distances)
-    distance_matrix = distance_matrix + distance_matrix.T
-    np.fill_diagonal(distance_matrix.values, 0)
+    for i in range(distance_matrix.shape[0]):
+        for j in range(i):
+            distance_matrix.iloc[j, i] = distance_matrix.iloc[i, j]
+
+    for i in range(distance_matrix.shape[0]):
+        distance_matrix.iloc[i, i] = 0
+
     return distance_matrix
 
 
 if __name__ == "__main__":
-    dataset = enzymes
-    distances = calculate_distances_parallel(dataset)
-    distance_matrix = create_distance_matrix(distances)
-    distance_matrix.to_csv("tmd_results/enzymes_tmd.csv")
+    # enzymes
+    enzymes_distances = calculate_distances_parallel(enzymes)
+    enzymes_distance_matrix = create_distance_matrix(enzymes_distances)
+    enzymes_distance_matrix.to_csv("tmd_results/enzymes_tmd.csv")
+    print("Enzymes done")
+
+    # proteins
+    # proteins_distances = calculate_distances_parallel(proteins)
+    # proteins_distance_matrix = create_distance_matrix(proteins_distances)
+    # proteins_distance_matrix.to_csv("tmd_results/proteins_tmd.csv")
+    # print("Proteins done")
+
+    # imdb
+    # imdb_distances = calculate_distances_parallel(imdb)
+    # imdb_distance_matrix = create_distance_matrix(imdb_distances)
+    # imdb_distance_matrix.to_csv("tmd_results/imdb_tmd.csv")
+    # print("IMDB done")
