@@ -1,12 +1,30 @@
 """
 Tree Mover's Distance solver
 """
-# Copied from Ching-Yao Chuang <cychuang@mit.edu>
 
+import pandas as pd
 import numpy as np
 import torch
 import ot
 import copy
+from tqdm import tqdm
+import pickle
+import torch_geometric.transforms as T
+import matplotlib.pyplot as plt
+
+from torch_geometric.datasets import TUDataset
+
+import multiprocessing
+
+
+mutag = list(TUDataset('data', name='MUTAG'))
+enzymes = list(TUDataset(root="data", name="ENZYMES"))
+proteins = list(TUDataset(root="data", name="PROTEINS"))
+imdb = list(TUDataset("data", name="IMDB-BINARY"))
+
+for graph in imdb:
+    n = graph.num_nodes
+    graph.x = torch.ones((n,1))
 
 
 def get_neighbors(g):
@@ -172,3 +190,36 @@ def TMD(g1, g2, w, L=4):
 
     wass = ot.emd2(dist_1, dist_2, M)
     return wass
+
+
+def calculate_distances_helper(args):
+    i, dataset = args
+    n = len(dataset)
+    curr_distances = []
+    for j in range(i):
+        curr_distances.append(TMD(dataset[i], dataset[j], w=1.0, L=4))
+    return curr_distances
+
+
+def calculate_distances_parallel(dataset):
+    n = len(dataset)
+    distances = []
+    with multiprocessing.Pool(processes=min(16, multiprocessing.cpu_count())) as pool:
+        args = [(i, dataset) for i in range(n)]
+        for result in tqdm(pool.imap(calculate_distances_helper, args), total=n):
+            distances.append(result)
+    return distances
+
+
+def create_distance_matrix(distances):
+    distance_matrix = pd.DataFrame(distances)
+    distance_matrix = distance_matrix + distance_matrix.T
+    np.fill_diagonal(distance_matrix.values, 0)
+    return distance_matrix
+
+
+if __name__ == "__main__":
+    dataset = enzymes
+    distances = calculate_distances_parallel(dataset)
+    distance_matrix = create_distance_matrix(distances)
+    distance_matrix.to_csv("tmd_results/enzymes_tmd.csv")
