@@ -204,7 +204,7 @@ def calculate_distances_helper(args):
 def calculate_distances_parallel(dataset):
     n = len(dataset)
     distances = []
-    with multiprocessing.Pool(processes=min(16, multiprocessing.cpu_count())) as pool:
+    with multiprocessing.Pool(processes=min(32, multiprocessing.cpu_count())) as pool:
         args = [(i, dataset) for i in range(n)]
         for result in tqdm(pool.imap(calculate_distances_helper, args), total=n):
             distances.append(result)
