@@ -196,8 +196,11 @@ def calculate_distances_helper(args):
     i, dataset = args
     n = len(dataset)
     curr_distances = []
-    for j in range(i):
-        curr_distances.append(TMD(dataset[i], dataset[j], w=1.0, L=4))
+    for j in range(i+1):
+        try:
+            curr_distances.append(TMD(dataset[i], dataset[j], w=1.0, L=4))
+        except:
+            continue
     return curr_distances
 
 
@@ -226,8 +229,9 @@ def create_distance_matrix(distances):
 if __name__ == "__main__":
     # enzymes
     enzymes_distances = calculate_distances_parallel(enzymes)
-    enzymes_distance_matrix = create_distance_matrix(enzymes_distances)
-    enzymes_distance_matrix.to_csv("tmd_results/enzymes_tmd.csv")
+    # enzymes_distance_matrix = create_distance_matrix(enzymes_distances)
+    # enzymes_distance_matrix.to_csv("tmd_results/enzymes_tmd.csv")
+    enzymes_distances.to_csv("tmd_results/enzymes_tmd.csv")
     print("Enzymes done")
 
     # proteins
