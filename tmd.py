@@ -237,13 +237,19 @@ if __name__ == "__main__":
     print("Enzymes done")
 
     # proteins
-    # proteins_distances = calculate_distances_parallel(proteins)
+    proteins_distances = calculate_distances_parallel(proteins)
     # proteins_distance_matrix = create_distance_matrix(proteins_distances)
     # proteins_distance_matrix.to_csv("tmd_results/proteins_tmd.csv")
-    # print("Proteins done")
+    # pickle proteins_distances
+    with open("tmd_results/proteins_tmd.pkl", "wb") as f:
+        pickle.dump(proteins_distances, f)
+    print("Proteins done")
 
     # imdb
-    # imdb_distances = calculate_distances_parallel(imdb)
+    imdb_distances = calculate_distances_parallel(imdb)
     # imdb_distance_matrix = create_distance_matrix(imdb_distances)
     # imdb_distance_matrix.to_csv("tmd_results/imdb_tmd.csv")
-    # print("IMDB done")
+    # pickle imdb_distances
+    with open("tmd_results/imdb_tmd.pkl", "wb") as f:
+        pickle.dump(imdb_distances, f)
+    print("IMDB done")
