@@ -207,7 +207,7 @@ def calculate_distances_helper(args):
 def calculate_distances_parallel(dataset):
     n = len(dataset)
     distances = []
-    with multiprocessing.Pool(processes=min(32, multiprocessing.cpu_count())) as pool:
+    with multiprocessing.Pool(processes=min(16, multiprocessing.cpu_count())) as pool:
         args = [(i, dataset) for i in range(n)]
         for result in tqdm(pool.imap(calculate_distances_helper, args), total=n):
             distances.append(result)
@@ -228,13 +228,13 @@ def create_distance_matrix(distances):
 
 if __name__ == "__main__":
     # enzymes
-    enzymes_distances = calculate_distances_parallel(enzymes)
+    # enzymes_distances = calculate_distances_parallel(enzymes)
     # enzymes_distance_matrix = create_distance_matrix(enzymes_distances)
     # enzymes_distance_matrix.to_csv("tmd_results/enzymes_tmd.csv")
     # pickle enzymes_distances
-    with open("tmd_results/enzymes_tmd.pkl", "wb") as f:
-        pickle.dump(enzymes_distances, f)
-    print("Enzymes done")
+    # with open("tmd_results/enzymes_tmd.pkl", "wb") as f:
+        # pickle.dump(enzymes_distances, f)
+    # print("Enzymes done")
 
     # proteins
     proteins_distances = calculate_distances_parallel(proteins)
