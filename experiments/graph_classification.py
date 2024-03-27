@@ -1,4 +1,5 @@
 import torch
+import os
 import numpy as np
 # from measure_smoothing import dirichlet_normalized
 from attrdict import AttrDict
@@ -173,6 +174,12 @@ class Experiment:
                                 _, pred = out.max(dim=1)
                                 graph_dict[i] = pred.eq(y).sum().item()
                         print("Computed error for each graph in the test dataset")
+
+                        # save the model
+                        torch.save(self.model.state_dict(), "model.pth")
+                        
+                        # get the current directory and print it
+                        print("Saved model in directory: ", os.getcwd())
 
                     return best_train_acc, best_validation_acc, best_test_acc, energy, graph_dict
                 
