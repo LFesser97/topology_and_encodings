@@ -205,9 +205,10 @@ for key in datasets:
 
         elif args.encoding == "VN-k":
             print('ENCODING STARTED...')
+            transform = T.VirtualNode()
             for i in range(len(dataset)):
                 for j in range(num_vns):
-                    dataset[i] = T.VirtualNode(dataset[i])
+                    dataset[i] = transform(dataset[i])
                 print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
             torch.save(dataset, f"data/{key}_{args.encoding}_{num_vns}.pt")
 
