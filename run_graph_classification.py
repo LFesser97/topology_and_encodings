@@ -134,7 +134,7 @@ default_args = AttrDict({
     "display": True,
     "num_trials": 400,
     "eval_every": 1,
-    "rewiring": "borf",
+    "rewiring": None,
     "num_iterations": 3,
     "patience": 100,
     "output_dim": 2,
@@ -225,6 +225,9 @@ for key in datasets:
 
                 elif args.encoding == "EGO":
                     transform = T.RootedEgoNets(num_hops=2)
+
+                elif args.encoding == "VN":
+                    transform = T.VirtualNode()
 
                 try:
                     dataset[i] = transform(dataset[i])
