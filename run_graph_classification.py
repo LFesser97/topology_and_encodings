@@ -188,7 +188,7 @@ for key in datasets:
     
     
     # encode the dataset using the given encoding, if args.encoding is not None
-    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO"]:
+    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO", "VN"]:
 
         if os.path.exists(f"data/{key}_{args.encoding}.pt"):
             print('ENCODING ALREADY COMPLETED...')
