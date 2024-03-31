@@ -236,7 +236,7 @@ def brf2(
     tau=1,
     is_undirected=False,
     batch_add=4,
-    batch_remove=2,
+    batch_remove=0, # CHANGED FROM 2
     device=None
 ):
     # Preprocess data
@@ -384,8 +384,8 @@ def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
             upper_bound = mean2 #+ std2
 
         # Get top positive curved edges
-        most_pos_edges = [edge for edge in _C if orc.G[edge[0]][edge[1]]['ricciCurvature']['rc_curvature'] > upper_bound]
-        # most_pos_edges = _C[-batch_remove:]
+        # most_pos_edges = [edge for edge in _C if orc.G[edge[0]][edge[1]]['ricciCurvature']['rc_curvature'] > upper_bound]
+        most_pos_edges = _C[-batch_remove:]
 
         # get all edges with negative curvature
         most_neg_edges = [edge for edge in _C if orc.G[edge[0]][edge[1]]['ricciCurvature']['rc_curvature'] < 0]
