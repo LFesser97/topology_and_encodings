@@ -243,7 +243,6 @@ for key in datasets:
             torch.save(dataset, f"data/{key}_{args.encoding}.pt")
 
 
-    """
     print('REWIRING STARTED...')
     start = time.time()
     with tqdm.tqdm(total=len(dataset)) as pbar:
@@ -314,7 +313,6 @@ for key in datasets:
     rewiring_duration = end - start
 
     print('REWIRING COMPLETED...')
-    """
 
     # create a dictionary of the graphs in the dataset with the key being the graph index
     graph_dict = {}
