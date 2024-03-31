@@ -95,6 +95,7 @@ datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": im
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins}
 # datasets = {"collab": collab, "reddit": reddit}
 
+num_vns = 2
 
 for key in datasets:
     if key in ["reddit", "imdb", "collab"]:
@@ -188,7 +189,7 @@ for key in datasets:
     
     
     # encode the dataset using the given encoding, if args.encoding is not None
-    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO", "VN"]:
+    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO", "VN", "VN-k"]:
 
         if os.path.exists(f"data/{key}_{args.encoding}.pt"):
             print('ENCODING ALREADY COMPLETED...')
@@ -201,6 +202,14 @@ for key in datasets:
                 dataset[i] = lcp.compute_orc(dataset[i])
                 print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
             torch.save(dataset, f"data/{key}_{args.encoding}.pt")
+
+        elif args.encoding == "VN-k":
+            print('ENCODING STARTED...')
+            for i in range(len(dataset)):
+                for j in range(num_vns):
+                    dataset[i] = T.VirtualNode()(dataset[i])
+                print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
+            torch.save(dataset, f"data/{key}_{args.encoding}_{num_vns}.pt")
 
         else:
             print('ENCODING STARTED...')
@@ -346,9 +355,14 @@ for key in datasets:
             #print(f"Graph dictionary for {key} pickled")
 
     #else:
-    with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
-        pickle.dump(graph_dict, f)
-        print(f"Graph dictionary for {key} pickled")
+    if args.encoding == 'VN-k':
+        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
+            pickle.dump(graph_dict, f)
+            print(f"Graph dictionary for {key} pickled")
+    else:
+        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+            pickle.dump(graph_dict, f)
+            print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)

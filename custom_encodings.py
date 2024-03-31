@@ -6,8 +6,10 @@ This file contains the following custom encodings:
     - Ollivier-Ricci curvature structural encodings
     - Ollivier-Ricci curvature shortest path relative positional encodings
 """
+import copy
 
 import torch
+from torch import Tensor
 import numpy as np
 
 from scipy.sparse import csr_matrix
