@@ -337,15 +337,15 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file depending on the number of layers 
-    if args.num_layers == 4:
-        with open(f"new_results/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
-            pickle.dump(graph_dict, f)
-            print(f"Graph dictionary for {key} pickled")
+    #if args.num_layers == 4:
+        #with open(f"new_results/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+           #pickle.dump(graph_dict, f)
+            #print(f"Graph dictionary for {key} pickled")
 
-    else:
-        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
-            pickle.dump(graph_dict, f)
-            print(f"Graph dictionary for {key} pickled")
+    #else:
+    with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+        pickle.dump(graph_dict, f)
+        print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
