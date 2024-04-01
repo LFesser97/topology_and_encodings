@@ -91,6 +91,7 @@ class Experiment:
         train_goal = 0.0
         validation_goal = 0.0
         epochs_no_improve = 0
+        best_model  = self.model # keep track of the best model
 
         train_loader = DataLoader(self.train_dataset, batch_size=self.args.batch_size, shuffle=True)
         validation_loader = DataLoader(self.validation_dataset, batch_size=self.args.batch_size, shuffle=True)
@@ -149,6 +150,7 @@ class Experiment:
                         epochs_no_improve = 0
                         validation_goal = validation_acc * self.args.stopping_threshold
                         new_best_str = ' (new best validation)'
+                        best_model = self.model
                     elif validation_acc > best_validation_acc:
                         best_train_acc = train_acc
                         best_validation_acc = validation_acc
@@ -166,17 +168,18 @@ class Experiment:
 
                         # evaluate the model on all graphs in the dataset
                         # and record the error for each graph in the dictionary
+                        assert best_model != self.model, "Best model is the same as the current model"
                         for graph, i in zip(complete_loader, range(len(self.dataset))):
                             if i in self.categories[2]:
                                 graph = graph.to(self.args.device)
                                 y = graph.y.to(self.args.device)
-                                out = self.model(graph)
+                                out = best_model(graph)
                                 _, pred = out.max(dim=1)
                                 graph_dict[i] = pred.eq(y).sum().item()
                         print("Computed error for each graph in the test dataset")
 
                         # save the model
-                        torch.save(self.model.state_dict(), "model.pth")
+                        torch.save(best_model.state_dict(), "model.pth")
                         
                         # get the current directory and print it
                         print("Saved model in directory: ", os.getcwd())
