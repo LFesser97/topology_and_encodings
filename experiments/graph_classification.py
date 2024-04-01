@@ -1,5 +1,6 @@
 import torch
 import os
+import copy
 import numpy as np
 # from measure_smoothing import dirichlet_normalized
 from attrdict import AttrDict
@@ -91,7 +92,7 @@ class Experiment:
         train_goal = 0.0
         validation_goal = 0.0
         epochs_no_improve = 0
-        best_model  = self.model # keep track of the best model
+        best_model = copy.deepcopy(self.model)
 
         train_loader = DataLoader(self.train_dataset, batch_size=self.args.batch_size, shuffle=True)
         validation_loader = DataLoader(self.validation_dataset, batch_size=self.args.batch_size, shuffle=True)
@@ -150,7 +151,7 @@ class Experiment:
                         epochs_no_improve = 0
                         validation_goal = validation_acc * self.args.stopping_threshold
                         new_best_str = ' (new best validation)'
-                        best_model = self.model
+                        best_model = copy.deepcopy(self.model)
                     elif validation_acc > best_validation_acc:
                         best_train_acc = train_acc
                         best_validation_acc = validation_acc
