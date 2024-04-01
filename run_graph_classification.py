@@ -95,7 +95,7 @@ datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": im
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins}
 # datasets = {"collab": collab, "reddit": reddit}
 
-num_vns = 2
+num_vns = 3
 
 for key in datasets:
     if key in ["reddit", "imdb", "collab"]:
