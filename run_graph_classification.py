@@ -91,8 +91,8 @@ with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_bound
 # proteins_encoded = torch.load("data/proteins_encoded.pt")
 # print("IMDB ENCODED LOADED")
 
-# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
-datasets = {"enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+# datasets = {"enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 # datasets = {"collab": collab, "reddit": reddit}
 
 num_vns = 2
@@ -136,15 +136,15 @@ default_args = AttrDict({
     "num_trials": 400,
     "eval_every": 1,
     "rewiring": None,
-    "num_iterations": 3,
+    "num_iterations": 1,
     "patience": 30,
     "output_dim": 2,
     "alpha": 0.1,
     "eps": 0.001,
     "dataset": None,
     "last_layer_fa": False,
-    "borf_batch_add" : 4,
-    "borf_batch_remove" : 2,
+    "borf_batch_add" : 20,
+    "borf_batch_remove" : 3,
     "sdrf_remove_edges" : False,
     "encoding" : None
 })
@@ -309,7 +309,7 @@ for key in datasets:
             for i in range(len(dataset)):
                 dataset[i].edge_index, dataset[i].edge_type = borf.borf5(dataset[i], 
                         loops=args.num_iterations, 
-                        remove_edges=False, 
+                        remove_edges=False,
                         is_undirected=True,
                         batch_add=args.borf_batch_add,
                         batch_remove=args.borf_batch_remove,
