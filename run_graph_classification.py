@@ -360,7 +360,7 @@ for key in datasets:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
             print(f"Graph dictionary for {key} pickled")
-    elif args.rewireing is None:
+    elif args.rewiring is None:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
             print(f"Graph dictionary for {key} pickled")
