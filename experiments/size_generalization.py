@@ -73,6 +73,12 @@ class Experiment:
             dataset_size = min(1000, len(self.dataset))
             train_size = int(0.125 * dataset_size)
 
+            # print the feature dimension of the first graph in the dataset
+            print("Feature dimension of the first graph in the dataset: ", self.dataset[0].x.shape[1])
+            
+            # print the number of edges of the first graph in the dataset
+            print("Number of edges of the first graph in the dataset: ", self.dataset[0].edge_index.shape[1])
+
             # sort all graphs in the dataset by number of nodes
             sorted_dataset = sorted(self.dataset, key=lambda x: x.num_nodes)
             
@@ -91,9 +97,7 @@ class Experiment:
         best_train_acc = 0.0
         best_test_acc = 0.0
         train_goal = 0.0
-        validation_goal = 0.0
         epochs_no_improve = 0
-        best_model = copy.deepcopy(self.model)
 
         train_loader = DataLoader(self.train_dataset, batch_size=self.args.batch_size, shuffle=True)
         validation_loader = DataLoader(self.validation_dataset, batch_size=self.args.batch_size, shuffle=True)
