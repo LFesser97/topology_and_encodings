@@ -84,7 +84,7 @@ class Experiment:
             
             # split the dataset into 8 parts, with the smallest graphs in the first part
             self.datasplits = {i: sorted_dataset[i*train_size:(i+1)*train_size] for i in range(8)}
-            self.train_dataset = self.datasplits[0]
+            self.train_dataset = self.datasplits[7]
             self.validation_dataset = self.datasplits[1]
             self.test_dataset = self.datasplits[2]
 
