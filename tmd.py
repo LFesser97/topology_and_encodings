@@ -17,7 +17,7 @@ from torch_geometric.datasets import TUDataset
 
 import multiprocessing
 
-from preprocessing import rewiring, sdrf, fosr, digl, borf
+from preprocessing import rewiring, borf
 
 
 mutag = list(TUDataset('data', name='MUTAG'))
