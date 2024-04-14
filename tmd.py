@@ -12,12 +12,12 @@ import pickle
 import torch_geometric.transforms as T
 import matplotlib.pyplot as plt
 import random
+import os
+import pathlib
 
 from torch_geometric.datasets import TUDataset
 
 import multiprocessing
-
-from preprocessing import rewiring, borf
 
 
 mutag = list(TUDataset('data', name='MUTAG'))
@@ -28,6 +28,27 @@ imdb = list(TUDataset("data", name="IMDB-BINARY"))
 for graph in imdb:
     n = graph.num_nodes
     graph.x = torch.ones((n,1))
+
+def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
+    is_undirected=False, batch_add=4, batch_remove=2, device=None,
+    save_dir='rewired_graphs', dataset_name=None, graph_index=0, debug=False):
+
+    # Check if there is a preprocessed graph
+    dirname = f'{save_dir}/{dataset_name}'
+    pathlib.Path(dirname).mkdir(parents=True, exist_ok=True)
+    edge_index_filename = os.path.join(dirname, f'borf_iters_{loops}_add_{batch_add}_remove_{batch_remove}_edge_index_{graph_index}.pt')
+    edge_type_filename = os.path.join(dirname, f'borf_iters_{loops}_add_{batch_add}_remove_{batch_remove}_edge_type_{graph_index}.pt')
+
+    if(os.path.exists(edge_index_filename) and os.path.exists(edge_type_filename)):
+        if(debug) : print(f'[INFO] Rewired graph for {loops} iterations, {batch_add} edge additions and {batch_remove} edge removal exists...')
+        with open(edge_index_filename, 'rb') as f:
+            edge_index = torch.load(f)
+        with open(edge_type_filename, 'rb') as f:
+            edge_type = torch.load(f)
+        return edge_index, edge_type
+    
+    else:
+        print("ERROR: Graph not found")
 
 dataset = mutag
 
@@ -61,7 +82,7 @@ elif dataset == proteins:
 
 
 for i in tqdm(range(len(dataset))):
-    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], 
+    dataset[i].edge_index, dataset[i].edge_type = borf3(dataset[i], 
             loops=num_iterations, 
             remove_edges=False, 
             is_undirected=True,

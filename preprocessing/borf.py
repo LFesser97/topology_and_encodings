@@ -5,7 +5,7 @@ import torch
 import pathlib
 import numpy as np
 import pandas as pd
-# import multiprocessing as mp
+import multiprocessing as mp
 import networkx as nx
 from torch_geometric.utils import (
     to_networkx,
