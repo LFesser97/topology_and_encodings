@@ -50,7 +50,7 @@ def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
     else:
         print("ERROR: Graph not found")
 
-dataset = mutag
+dataset = proteins
 
 if dataset == mutag:
     num_iterations = 1
