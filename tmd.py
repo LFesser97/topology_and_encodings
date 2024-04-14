@@ -74,13 +74,6 @@ elif dataset == proteins:
     print("Adding edges: ", borf_batch_add)
     print("Removing edges: ", borf_batch_remove)
 
-    # randomly sample 100 graphs with label 0 and 100 graphs with label 1
-    random_selection_first_segment = random.sample(dataset[:600], 100)
-    random_selection_second_segment = random.sample(dataset[600:], 100)
-    dataset = random_selection_first_segment + random_selection_second_segment
-    print("Number of graphs: ", len(dataset))
-
-
 for i in tqdm(range(len(dataset))):
     dataset[i].edge_index, dataset[i].edge_type = borf3(dataset[i], 
             loops=num_iterations, 
@@ -90,6 +83,14 @@ for i in tqdm(range(len(dataset))):
             batch_remove=borf_batch_remove,
             dataset_name=key,
             graph_index=i)
+
+
+if dataset == proteins:
+    # randomly sample 100 graphs with label 0 and 100 graphs with label 1
+    random_selection_first_segment = random.sample(dataset[:600], 100)
+    random_selection_second_segment = random.sample(dataset[600:], 100)
+    dataset = random_selection_first_segment + random_selection_second_segment
+    print("Number of graphs: ", len(dataset))
 
 
 def get_neighbors(g):
