@@ -59,7 +59,7 @@ if dataset == mutag:
     num_iterations = 1
     borf_batch_add = 20
     borf_batch_remove = 3
-    key = "MUTAG"
+    key = "mutag"
 
     print("Rewiring MUTAG with BORF")
     print("Number of iterations: ", num_iterations)
@@ -70,7 +70,7 @@ elif dataset == proteins:
     num_iterations = 3
     borf_batch_add = 4
     borf_batch_remove = 1
-    key = "PROTEINS"
+    key = "proteins"
 
     print("Rewiring PROTEINS with BORF")
     print("Number of iterations: ", num_iterations)
