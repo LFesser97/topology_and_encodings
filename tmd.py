@@ -87,10 +87,18 @@ for i in tqdm(range(len(dataset))):
 
 if dataset == proteins:
     # randomly sample 100 graphs with label 0 and 100 graphs with label 1
-    random_selection_first_segment = random.sample(dataset[:600], 100)
-    random_selection_second_segment = random.sample(dataset[600:], 100)
+    random_indices_first_segment = random.sample(range(600), 100)
+    random_selection_first_segment = [dataset[i] for i in random_indices_first_segment]
+
+    # Randomly choose 100 elements from the rest of the list (elements after the first 600)
+    random_indices_second_segment = random.sample(range(600, len(dataset)), 100)
+    random_selection_second_segment = [dataset[i] for i in random_indices_second_segment]
+
+    # print the indices of the selected graphs
+    print("Selected indices for the first segment: ", random_indices_first_segment)
+    print("Selected indices for the second segment: ", random_indices_second_segment)
+
     dataset = random_selection_first_segment + random_selection_second_segment
-    print("Number of graphs: ", len(dataset))
 
 
 def get_neighbors(g):
