@@ -11,10 +11,13 @@ from tqdm import tqdm
 import pickle
 import torch_geometric.transforms as T
 import matplotlib.pyplot as plt
+import random
 
 from torch_geometric.datasets import TUDataset
 
 import multiprocessing
+
+from preprocessing import rewiring, sdrf, fosr, digl, borf
 
 
 mutag = list(TUDataset('data', name='MUTAG'))
@@ -26,21 +29,49 @@ for graph in imdb:
     n = graph.num_nodes
     graph.x = torch.ones((n,1))
 
+dataset = mutag
+
+if dataset == mutag:
+    num_iterations = 1
+    borf_batch_add = 20
+    borf_batch_remove = 3
+    key = "MUTAG"
+
+    print("Rewiring MUTAG with BORF")
+    print("Number of iterations: ", num_iterations)
+    print("Adding edges: ", borf_batch_add)
+    print("Removing edges: ", borf_batch_remove)
+
+elif dataset == proteins:
+    num_iterations = 3
+    borf_batch_add = 4
+    borf_batch_remove = 1
+    key = "PROTEINS"
+
+    print("Rewiring PROTEINS with BORF")
+    print("Number of iterations: ", num_iterations)
+    print("Adding edges: ", borf_batch_add)
+    print("Removing edges: ", borf_batch_remove)
+
+    # randomly sample 100 graphs with label 0 and 100 graphs with label 1
+    random_selection_first_segment = random.sample(dataset[:600], 100)
+    random_selection_second_segment = random.sample(dataset[600:], 100)
+    dataset = random_selection_first_segment + random_selection_second_segment
+    print("Number of graphs: ", len(dataset))
+
+
+for i in tqdm(range(len(dataset))):
+    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], 
+            loops=num_iterations, 
+            remove_edges=False, 
+            is_undirected=True,
+            batch_add=borf_batch_add,
+            batch_remove=borf_batch_remove,
+            dataset_name=key,
+            graph_index=i)
+
 
 def get_neighbors(g):
-    '''
-    get neighbor indexes for each node
-
-    Parameters
-    ----------
-    g : input torch_geometric graph
-
-
-    Returns
-    ----------
-    adj: a dictionary that store the neighbor indexes
-
-    '''
     adj = {}
     for i in range(len(g.edge_index[0])):
         node1 = g.edge_index[0][i].item()
@@ -53,27 +84,6 @@ def get_neighbors(g):
 
 
 def TMD(g1, g2, w, L=4):
-    '''
-    return the Tree Mover’s Distance (TMD) between g1 and g2
-
-    Parameters
-    ----------
-    g1, g2 : two torch_geometric graphs
-    w : weighting constant for each depth
-         if it is a list, then w[l] is the weight for depth-(l+1) tree
-         if it is a constant, then every layer shares the same weight
-    L    : Depth of computation trees for calculating TMD
-
-    Returns
-    ----------
-    wass : The TMD between g1 and g2
-
-    Reference
-    ----------
-    Chuang et al., Tree Mover’s Distance: Bridging Graph Metrics and
-    Stability of Graph Neural Networks, NeurIPS 2022
-    '''
-
     if isinstance(w, list):
         assert(len(w) == L-1)
     else:
@@ -227,6 +237,14 @@ def create_distance_matrix(distances):
 
 
 if __name__ == "__main__":
+    dataset_distances = calculate_distances_parallel(dataset)
+    dataset_distance_matrix = create_distance_matrix(dataset_distances)
+    # dataset_distance_matrix.to_csv("tmd_results/{}_borf_tmd.csv".format(key))
+    # pickle dataset_distances
+    with open("tmd_results/{}_borf_tmd.pkl".format(key), "wb") as f:
+        pickle.dump(dataset_distances, f)
+    print("Dataset done")
+
     # enzymes
     # enzymes_distances = calculate_distances_parallel(enzymes)
     # enzymes_distance_matrix = create_distance_matrix(enzymes_distances)
@@ -237,19 +255,19 @@ if __name__ == "__main__":
     # print("Enzymes done")
 
     # proteins
-    proteins_distances = calculate_distances_parallel(proteins)
+    # proteins_distances = calculate_distances_parallel(proteins)
     # proteins_distance_matrix = create_distance_matrix(proteins_distances)
     # proteins_distance_matrix.to_csv("tmd_results/proteins_tmd.csv")
     # pickle proteins_distances
-    with open("tmd_results/proteins_tmd.pkl", "wb") as f:
-        pickle.dump(proteins_distances, f)
-    print("Proteins done")
+    # with open("tmd_results/proteins_tmd.pkl", "wb") as f:
+        # pickle.dump(proteins_distances, f)
+    # print("Proteins done")
 
     # imdb
-    imdb_distances = calculate_distances_parallel(imdb)
+    # imdb_distances = calculate_distances_parallel(imdb)
     # imdb_distance_matrix = create_distance_matrix(imdb_distances)
     # imdb_distance_matrix.to_csv("tmd_results/imdb_tmd.csv")
     # pickle imdb_distances
-    with open("tmd_results/imdb_tmd.pkl", "wb") as f:
-        pickle.dump(imdb_distances, f)
-    print("IMDB done")
+    # with open("tmd_results/imdb_tmd.pkl", "wb") as f:
+        # pickle.dump(imdb_distances, f)
+    # print("IMDB done")
