@@ -39,6 +39,9 @@ def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
     edge_index_filename = os.path.join(dirname, f'borf_iters_{loops}_add_{batch_add}_remove_{batch_remove}_edge_index_{graph_index}.pt')
     edge_type_filename = os.path.join(dirname, f'borf_iters_{loops}_add_{batch_add}_remove_{batch_remove}_edge_type_{graph_index}.pt')
 
+    print(edge_index_filename)
+    print(edge_type_filename)
+
     if(os.path.exists(edge_index_filename) and os.path.exists(edge_type_filename)):
         if(debug) : print(f'[INFO] Rewired graph for {loops} iterations, {batch_add} edge additions and {batch_remove} edge removal exists...')
         with open(edge_index_filename, 'rb') as f:
