@@ -53,7 +53,7 @@ def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
         print("ERROR: Graph not found")
 
 
-dataset = mutag
+dataset = proteins
 rewiring = "fosr"
 
 
@@ -109,14 +109,16 @@ elif rewiring == "fosr":
         dataset[i].edge_type = torch.tensor(edge_type)
 
 
-"""
 if dataset == proteins:
     # randomly sample 100 graphs with label 0 and 100 graphs with label 1
-    random_indices_first_segment = random.sample(range(600), 100)
+    # random_indices_first_segment = random.sample(range(600), 100)
+    random_indices_first_segment = [493, 271, 201, 162, 326, 298, 389, 258, 436, 163, 42, 519, 339, 150, 299, 384, 57, 62, 524, 217, 482, 115, 551, 59, 487, 158, 149, 32, 252, 582, 213, 358, 226, 581, 338, 177, 345, 390, 7, 173, 567, 350, 585, 575, 135, 41, 372, 420, 65, 474, 228, 112, 588, 15, 319, 259, 540, 0, 223, 571, 308, 8, 209, 348, 331, 90, 455, 200, 463, 385, 359, 441, 276, 176, 261, 485, 86, 461, 366, 222, 157, 238, 549, 377, 211, 69, 106, 296, 208, 452, 265, 198, 89, 125, 240, 454, 517, 282, 542, 144]
     random_selection_first_segment = [dataset[i] for i in random_indices_first_segment]
 
+
     # Randomly choose 100 elements from the rest of the list (elements after the first 600)
-    random_indices_second_segment = random.sample(range(600, len(dataset)), 100)
+    # random_indices_second_segment = random.sample(range(600, len(dataset)), 100)
+    random_indices_second_segment = [608, 630, 668, 1108, 756, 1094, 945, 923, 865, 1011, 978, 803, 952, 889, 710, 1046, 912, 1020, 1076, 1001, 828, 856, 953, 1049, 901, 795, 832, 605, 1092, 681, 1078, 1064, 1067, 649, 944, 765, 977, 959, 1042, 915, 660, 665, 839, 676, 636, 813, 610, 1032, 1004, 694, 860, 616, 651, 954, 830, 878, 1034, 1088, 704, 621, 1089, 686, 844, 902, 656, 1075, 833, 728, 853, 997, 1047, 921, 880, 1091, 994, 1018, 990, 1027, 808, 877, 761, 1112, 776, 768, 942, 1019, 737, 692, 1095, 971, 957, 1037, 1048, 903, 909, 857, 896, 747, 851, 611]
     random_selection_second_segment = [dataset[i] for i in random_indices_second_segment]
 
     # print the indices of the selected graphs
@@ -124,7 +126,7 @@ if dataset == proteins:
     print("Selected indices for the second segment: ", random_indices_second_segment)
 
     dataset = random_selection_first_segment + random_selection_second_segment
-"""
+
 
 
 def get_neighbors(g):
