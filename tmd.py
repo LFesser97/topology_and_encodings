@@ -54,7 +54,7 @@ def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
 
 
 dataset = proteins
-rewiring = "fosr"
+rewiring = ""
 
 
 if rewiring == "borf":
