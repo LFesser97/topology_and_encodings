@@ -299,7 +299,7 @@ if __name__ == "__main__":
     dataset_distance_matrix = create_distance_matrix(dataset_distances)
     # dataset_distance_matrix.to_csv("tmd_results/{}_borf_tmd.csv".format(key))
     # pickle dataset_distances
-    with open("tmd_results/{}_fosr_tmd.pkl".format(key), "wb") as f:
+    with open("tmd_results/{}_no_rewiring_tmd.pkl".format(key), "wb") as f:
         pickle.dump(dataset_distances, f)
     print("Dataset done")
 
