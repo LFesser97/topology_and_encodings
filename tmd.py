@@ -17,6 +17,8 @@ import pathlib
 
 from torch_geometric.datasets import TUDataset
 
+from preprocessing import fosr
+
 import multiprocessing
 
 
@@ -50,41 +52,64 @@ def borf3(data, loops=10, remove_edges=True, removal_bound=0.5, tau=1,
     else:
         print("ERROR: Graph not found")
 
-dataset = proteins
 
-if dataset == mutag:
-    num_iterations = 1
-    borf_batch_add = 20
-    borf_batch_remove = 3
-    key = "mutag"
-
-    print("Rewiring MUTAG with BORF")
-    print("Number of iterations: ", num_iterations)
-    print("Adding edges: ", borf_batch_add)
-    print("Removing edges: ", borf_batch_remove)
-
-elif dataset == proteins:
-    num_iterations = 3
-    borf_batch_add = 4
-    borf_batch_remove = 1
-    key = "proteins"
-
-    print("Rewiring PROTEINS with BORF")
-    print("Number of iterations: ", num_iterations)
-    print("Adding edges: ", borf_batch_add)
-    print("Removing edges: ", borf_batch_remove)
-
-for i in tqdm(range(len(dataset))):
-    dataset[i].edge_index, dataset[i].edge_type = borf3(dataset[i], 
-            loops=num_iterations, 
-            remove_edges=False, 
-            is_undirected=True,
-            batch_add=borf_batch_add,
-            batch_remove=borf_batch_remove,
-            dataset_name=key,
-            graph_index=i)
+dataset = mutag
+rewiring = "fosr"
 
 
+if rewiring == "borf":
+    if dataset == mutag:
+        num_iterations = 1
+        borf_batch_add = 20
+        borf_batch_remove = 3
+        key = "mutag"
+
+        print("Rewiring MUTAG with BORF")
+        print("Number of iterations: ", num_iterations)
+        print("Adding edges: ", borf_batch_add)
+        print("Removing edges: ", borf_batch_remove)
+
+    elif dataset == proteins:
+        num_iterations = 3
+        borf_batch_add = 4
+        borf_batch_remove = 1
+        key = "proteins"
+
+        print("Rewiring PROTEINS with BORF")
+        print("Number of iterations: ", num_iterations)
+        print("Adding edges: ", borf_batch_add)
+        print("Removing edges: ", borf_batch_remove)
+
+    for i in tqdm(range(len(dataset))):
+        dataset[i].edge_index, dataset[i].edge_type = borf3(dataset[i], 
+                loops=num_iterations, 
+                remove_edges=False, 
+                is_undirected=True,
+                batch_add=borf_batch_add,
+                batch_remove=borf_batch_remove,
+                dataset_name=key,
+                graph_index=i)
+        
+elif rewiring == "fosr":
+    if dataset == mutag:
+        key = "mutag"
+        num_iterations = 10
+        print("Rewiring MUTAG with FOSR")
+        print("Number of iterations: ", num_iterations)
+
+    elif dataset == proteins:
+        key = "proteins"
+        num_iterations = 30
+        print("Rewiring PROTEINS with FOSR")
+        print("Number of iterations: ", num_iterations)
+
+    for i in tqdm(range(len(dataset))):
+        edge_index, edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=num_iterations)
+        dataset[i].edge_index = torch.tensor(edge_index)
+        dataset[i].edge_type = torch.tensor(edge_type)
+
+
+"""
 if dataset == proteins:
     # randomly sample 100 graphs with label 0 and 100 graphs with label 1
     random_indices_first_segment = random.sample(range(600), 100)
@@ -99,6 +124,7 @@ if dataset == proteins:
     print("Selected indices for the second segment: ", random_indices_second_segment)
 
     dataset = random_selection_first_segment + random_selection_second_segment
+"""
 
 
 def get_neighbors(g):
@@ -271,7 +297,7 @@ if __name__ == "__main__":
     dataset_distance_matrix = create_distance_matrix(dataset_distances)
     # dataset_distance_matrix.to_csv("tmd_results/{}_borf_tmd.csv".format(key))
     # pickle dataset_distances
-    with open("tmd_results/{}_borf_tmd.pkl".format(key), "wb") as f:
+    with open("tmd_results/{}_fosr_tmd.pkl".format(key), "wb") as f:
         pickle.dump(dataset_distances, f)
     print("Dataset done")
 
