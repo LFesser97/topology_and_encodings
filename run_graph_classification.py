@@ -141,8 +141,8 @@ class SelectiveRewiring:
 
         if edge_density < dataset_properties['edge_density'][0] - dataset_properties['edge_density'][1] and average_degree < dataset_properties['average_degree'][0] - dataset_properties['average_degree'][1]:
             return None
-        elif algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
-            return 'fosr'
+        # elif algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
+            # return 'fosr'
         else:
             return 'borf'
 
