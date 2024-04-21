@@ -153,13 +153,13 @@ class SelectiveRewiring:
         """
         dataset_properties = {'average_degree' : [], 'edge_density' : [], 'algebraic_connectivity' : []}
 
-        average_degrees = {i: SelectiveRewiring.get_average_degree(graph) for i, graph in enumerate(dataset)}
-        edge_densities = {i: SelectiveRewiring.get_edge_density(graph) for i, graph in enumerate(dataset)}
-        algebraic_connectivities = {i: SelectiveRewiring.get_algebraic_connectivity(graph) for i, graph in enumerate(dataset)}
+        average_degrees = [SelectiveRewiring.get_average_degree(graph) for graph in dataset]
+        edge_densities = [SelectiveRewiring.get_edge_density(graph) for graph in dataset]
+        algebraic_connectivities = [SelectiveRewiring.get_algebraic_connectivity(graph) for graph in dataset]
 
-        dataset_properties['average_degree'] = [np.mean(average_degrees.values()), np.std(average_degrees.values())]
-        dataset_properties['edge_density'] = [np.mean(edge_densities.values()), np.std(edge_densities.values())]
-        dataset_properties['algebraic_connectivity'] = [np.mean(algebraic_connectivities.values()), np.std(algebraic_connectivities.values())]
+        dataset_properties['average_degree'] = [np.mean(average_degrees), np.std(average_degrees)]
+        dataset_properties['edge_density'] = [np.mean(edge_densities), np.std(edge_densities)]
+        dataset_properties['algebraic_connectivity'] = [np.mean(algebraic_connectivities), np.std(algebraic_connectivities)]
 
         return dataset_properties
 
