@@ -126,6 +126,64 @@ def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
 
     return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
 
+class SelectiveRewiring:
+    """
+    An abstract class that contains static methods for selective rewiring.
+    """
+    @staticmethod
+    def select_rewiring(graph, dataset_properties):
+        """
+        Select the rewiring method for the graph.
+        """
+        average_degree = SelectiveRewiring.get_average_degree(graph)
+        edge_density = SelectiveRewiring.get_edge_density(graph)
+        algebraic_connectivity = SelectiveRewiring.get_algebraic_connectivity(graph)
+
+        if edge_density < dataset_properties['edge_density'][0] - dataset_properties['edge_density'][1] and average_degree < dataset_properties['average_degree'][0] - dataset_properties['average_degree'][1]:
+            return None
+        elif algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
+            return 'fosr'
+        else:
+            return 'borf'
+
+    @staticmethod
+    def compute_attributes(dataset):
+        """
+        Compute the attributes of the dataset.
+        """
+        dataset_properties = {'average_degree' : [], 'edge_density' : [], 'algebraic_connectivity' : []}
+
+        average_degrees = {i: SelectiveRewiring.get_average_degree(graph) for i, graph in enumerate(dataset)}
+        edge_densities = {i: SelectiveRewiring.get_edge_density(graph) for i, graph in enumerate(dataset)}
+        algebraic_connectivities = {i: SelectiveRewiring.get_algebraic_connectivity(graph) for i, graph in enumerate(dataset)}
+
+        dataset_properties['average_degree'] = [np.mean(average_degrees.values()), np.std(average_degrees.values())]
+        dataset_properties['edge_density'] = [np.mean(edge_densities.values()), np.std(edge_densities.values())]
+        dataset_properties['algebraic_connectivity'] = [np.mean(algebraic_connectivities.values()), np.std(algebraic_connectivities.values())]
+
+        return dataset_properties
+
+    @staticmethod
+    def get_average_degree(graph):
+        """
+        Get the average degree of the graph.
+        """
+        return 2 * graph.num_edges / graph.num_nodes
+
+    @staticmethod
+    def get_edge_density(graph):
+        """
+        Get the edge density of the graph.
+        """
+        return graph.num_edges / (graph.num_nodes * (graph.num_nodes - 1))
+
+    @staticmethod
+    def get_algebraic_connectivity(graph):
+        """
+        Get the algebraic connectivity of the graph.
+        """
+        return rewiring.spectral_gap(to_networkx(graph))
+
 default_args = AttrDict({
     "dropout": 0.5,
     "num_layers": 4,
@@ -321,6 +379,15 @@ for key in datasets:
                 dataset[i].edge_index = digl.rewire(dataset[i], alpha=0.1, eps=0.05)
                 m = dataset[i].edge_index.shape[1]
                 dataset[i].edge_type = torch.tensor(np.zeros(m, dtype=np.int64))
+                pbar.update(1)
+        elif args.rewiring == "selective":
+            dataset_properties = SelectiveRewiring.compute_attributes(dataset)
+            for i in range(len(dataset)):
+                rewiring_method = SelectiveRewiring.select_rewiring(dataset[i], dataset_properties)
+                if rewiring_method == "fosr":
+                    dataset[i].edge_index, dataset[i].edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=10)
+                elif rewiring_method == "borf":
+                    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], loops=args.num_iterations, remove_edges=False, is_undirected=True)
                 pbar.update(1)
     end = time.time()
     rewiring_duration = end - start
