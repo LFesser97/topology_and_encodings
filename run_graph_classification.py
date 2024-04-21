@@ -389,10 +389,24 @@ for key in datasets:
                     dataset[i].edge_index, dataset[i].edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=10)
                 elif rewiring_method == "borf":
                     print(f"Graph {i} of {len(dataset)} rewired with BORF")
-                    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], loops=args.num_iterations, remove_edges=False, is_undirected=True)
+                    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], 
+                        loops=args.num_iterations, 
+                        remove_edges=False, 
+                        is_undirected=True,
+                        batch_add=args.borf_batch_add,
+                        batch_remove=args.borf_batch_remove,
+                        dataset_name=key,
+                        graph_index=i)
                 else:
                     print(f"Graph {i} of {len(dataset)} not rewired")
-                    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], loops=0, remove_edges=False, is_undirected=True)                    
+                    dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], 
+                        loops=0, 
+                        remove_edges=False, 
+                        is_undirected=True,
+                        batch_add=args.borf_batch_add,
+                        batch_remove=args.borf_batch_remove,
+                        dataset_name=key,
+                        graph_index=i)
                 pbar.update(1)
     end = time.time()
     rewiring_duration = end - start
