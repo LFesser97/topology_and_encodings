@@ -392,6 +392,7 @@ for key in datasets:
                     dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], loops=args.num_iterations, remove_edges=False, is_undirected=True)
                 else:
                     print(f"Graph {i} of {len(dataset)} not rewired")
+                    dataset[i].edge_type = torch.zeros(size=(len(dataset[i].num_edges),)).type(torch.LongTensor)
                 pbar.update(1)
     end = time.time()
     rewiring_duration = end - start
