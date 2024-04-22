@@ -131,6 +131,36 @@ class SelectiveRewiring:
     An abstract class that contains static methods for selective rewiring.
     """
     @staticmethod
+    def select_borf(graph, dataset_properties):
+        """
+        Select the rewiring method for the graph.
+        """
+        average_degree = SelectiveRewiring.get_average_degree(graph)
+        edge_density = SelectiveRewiring.get_edge_density(graph)
+
+        if edge_density < dataset_properties['edge_density'][0] and average_degree < dataset_properties['average_degree'][0]:
+            return None
+        else:
+            return 'borf'
+        
+    @staticmethod
+    def select_fosr(graph, dataset_properties):
+        """
+        Select the rewiring method for the graph.
+        """
+        average_degree = SelectiveRewiring.get_average_degree(graph)
+        edge_density = SelectiveRewiring.get_edge_density(graph)
+        algebraic_connectivity = SelectiveRewiring.get_algebraic_connectivity(graph)        
+
+        if edge_density < dataset_properties['edge_density'][0] and average_degree < dataset_properties['average_degree'][0]:
+            if algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
+                return 'fosr'
+            else:
+                return None
+        else:
+            return 'fosr'
+
+    @staticmethod
     def select_rewiring(graph, dataset_properties):
         """
         Select the rewiring method for the graph.
@@ -380,14 +410,11 @@ for key in datasets:
                 m = dataset[i].edge_index.shape[1]
                 dataset[i].edge_type = torch.tensor(np.zeros(m, dtype=np.int64))
                 pbar.update(1)
-        elif args.rewiring == "selective":
+        elif args.rewiring == "selective_borf":
             dataset_properties = SelectiveRewiring.compute_attributes(dataset)
             for i in range(len(dataset)):
-                rewiring_method = SelectiveRewiring.select_rewiring(dataset[i], dataset_properties)
-                if rewiring_method == "fosr":
-                    print(f"Graph {i} of {len(dataset)} rewired with FoSR")
-                    dataset[i].edge_index, dataset[i].edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=10)
-                elif rewiring_method == "borf":
+                rewiring_method = SelectiveRewiring.select_borf(dataset[i], dataset_properties)
+                if rewiring_method == "borf":
                     print(f"Graph {i} of {len(dataset)} rewired with BORF")
                     dataset[i].edge_index, dataset[i].edge_type = borf.borf3(dataset[i], 
                         loops=args.num_iterations, 
@@ -407,6 +434,17 @@ for key in datasets:
                         batch_remove=args.borf_batch_remove,
                         dataset_name=key,
                         graph_index=i)
+                pbar.update(1)
+        elif args.rewiring == "selective_fosr":
+            dataset_properties = SelectiveRewiring.compute_attributes(dataset)
+            for i in range(len(dataset)):
+                rewiring_method = SelectiveRewiring.select_fosr(dataset[i], dataset_properties)
+                if rewiring_method == "fosr":
+                    print(f"Graph {i} of {len(dataset)} rewired with FOSR")
+                    dataset[i].edge_index, dataset[i].edge_type = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=args.num_iterations)
+                else:
+                    print(f"Graph {i} of {len(dataset)} not rewired")
+                    dataset[i].edge_index, dataset[i].edge_type = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=0)
                 pbar.update(1)
     end = time.time()
     rewiring_duration = end - start
