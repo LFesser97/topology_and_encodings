@@ -441,10 +441,14 @@ for key in datasets:
                 rewiring_method = SelectiveRewiring.select_fosr(dataset[i], dataset_properties)
                 if rewiring_method == "fosr":
                     print(f"Graph {i} of {len(dataset)} rewired with FOSR")
-                    dataset[i].edge_index, dataset[i].edge_type = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=args.num_iterations)
+                    edge_index, edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=args.num_iterations)
+                    dataset[i].edge_index = torch.tensor(edge_index)
+                    dataset[i].edge_type = torch.tensor(edge_type)
                 else:
                     print(f"Graph {i} of {len(dataset)} not rewired")
-                    dataset[i].edge_index, dataset[i].edge_type = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=0)
+                    edge_index, edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=0)
+                    dataset[i].edge_index = torch.tensor(edge_index)
+                    dataset[i].edge_type = torch.tensor(edge_type)
                 pbar.update(1)
     end = time.time()
     rewiring_duration = end - start
