@@ -152,14 +152,10 @@ class SelectiveRewiring:
         edge_density = SelectiveRewiring.get_edge_density(graph)
         algebraic_connectivity = SelectiveRewiring.get_algebraic_connectivity(graph)        
 
-        """
-        if edge_density < dataset_properties['edge_density'][0] and average_degree < dataset_properties['average_degree'][0]:
-            if algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
-                return 'fosr'
-            else:
-                return None
-        else:
+        if algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
             return 'fosr'
+        else:
+            return None
         """
         if edge_density < dataset_properties['edge_density'][0] or average_degree < dataset_properties['average_degree'][0] - dataset_properties['average_degree'][1]:
             if algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
@@ -168,6 +164,7 @@ class SelectiveRewiring:
                 return None
         else:
             return 'fosr'
+        """
 
     @staticmethod
     def select_rewiring(graph, dataset_properties):
@@ -448,8 +445,7 @@ for key in datasets:
             dataset_properties = SelectiveRewiring.compute_attributes(dataset)
             for i in range(len(dataset)):
                 rewiring_method = SelectiveRewiring.select_fosr(dataset[i], dataset_properties)
-                # if rewiring_method == "fosr":
-                if i < 601:
+                if rewiring_method == "fosr":
                     print(f"Graph {i} of {len(dataset)} rewired with FOSR")
                     edge_index, edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=args.num_iterations)
                     dataset[i].edge_index = torch.tensor(edge_index)
