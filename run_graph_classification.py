@@ -161,7 +161,7 @@ class SelectiveRewiring:
         else:
             return 'fosr'
         """
-        if edge_density < dataset_properties['edge_density'][0] - dataset_properties['edge_density'][1] or average_degree < dataset_properties['average_degree'][0] - dataset_properties['average_degree'][1]:
+        if edge_density < dataset_properties['edge_density'][0] or average_degree < dataset_properties['average_degree'][0] - dataset_properties['average_degree'][1]:
             return None
         else:
             return 'fosr'
