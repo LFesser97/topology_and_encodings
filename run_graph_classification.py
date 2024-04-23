@@ -92,6 +92,41 @@ def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
 
     return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
 
+class SelectiveEncoding:
+    """
+    An abstract class that contains static methods for selective encoding.    
+    """
+    @staticmethod
+    def select_lcp(graph, dataset_properties):
+        """
+        Select the encoding method for the graph.
+        """
+        average_degree = SelectiveRewiring.get_average_degree(graph)
+        edge_density = SelectiveRewiring.get_edge_density(graph)
+        algebraic_connectivity = SelectiveRewiring.get_algebraic_connectivity(graph)
+
+        if algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
+            return None
+        else:
+            return 'lcp'
+        
+    @staticmethod
+    def add_zeroes(graph, dim):
+        """
+        Add zeroes to the graph.
+        """
+        zeroes = [0 for i in range(graph.num_nodes)]
+        padding = torch.tensor([zeroes for i in range(dim)]).T
+
+        if graph.x is not None:
+            graph.x = graph.x.view(-1, 1) if graph.x.dim() == 1 else graph.x
+            if graph.x.device != padding.device:
+                padding = padding.to(graph.x.device)
+            graph.x = torch.cat((graph.x, padding), dim=-1)
+        else:
+            graph.x = torch.cat(padding, dim=-1)
+        return graph
+
 class SelectiveRewiring:
     """
     An abstract class that contains static methods for selective rewiring.
@@ -249,7 +284,7 @@ for key in datasets:
     
     
     # encode the dataset using the given encoding, if args.encoding is not None
-    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO", "VN", "VN-k"]:
+    if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO", "VN", "VN-k", "S-LCP"]:
 
         if os.path.exists(f"data/{key}_{args.encoding}.pt"):
             print('ENCODING ALREADY COMPLETED...')
@@ -271,6 +306,19 @@ for key in datasets:
                     dataset[i] = transform(dataset[i])
                 print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
             torch.save(dataset, f"data/{key}_{args.encoding}_{num_vns}.pt")
+
+        elif args.encoding == "S-LCP":
+            print('ENCODING STARTED...')
+            lcp = LocalCurvatureProfile
+            dataset_properties = SelectiveRewiring.compute_attributes(dataset)
+            for i in range(len(dataset)):
+                encoding_method = SelectiveEncoding.select_lcp(dataset[i], dataset_properties)
+                if encoding_method == "lcp":
+                    dataset[i] = lcp.compute_orc(dataset[i])
+                    print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
+                else:
+                    dataset[i] = SelectiveEncoding.add_zeroes(dataset[i], 5)
+                    print(f"Graph {i} of {len(dataset)} not encoded")
 
         else:
             print('ENCODING STARTED...')
