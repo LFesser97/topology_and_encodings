@@ -58,7 +58,7 @@ peptides = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.
 # print("IMDB ENCODED LOADED")
 
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides}
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "collab": collab, "reddit": reddit}
 # datasets = {"collab": collab, "reddit": reddit}
 
 num_vns = 2
