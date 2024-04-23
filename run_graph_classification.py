@@ -32,7 +32,7 @@ imdb = list(TUDataset(root="data", name="IMDB-BINARY"))
 collab = list(TUDataset(root="data", name="COLLAB"))
 reddit = list(TUDataset(root="data", name="REDDIT-BINARY"))
 
-"""
+
 # load peptides dataset from url to the current directory using os and wget
 peptides_url = "https://www.dropbox.com/s/ycsq37q8sxs1ou8/peptidesfunc.zip?dl=1"
 peptides_zip_filepath = os.getcwd()
@@ -49,40 +49,6 @@ with zipfile.ZipFile(pepties_zip, 'r') as zip_ref:
 # load the peptides dataset train.pt
 peptides = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
 
-# load pascal dataset from url to the current directory using os and wget
-pascal_url = "https://www.dropbox.com/s/8x722ai272wqwl4/pascalvocsp.zip?dl=1"
-pascal_zip_filepath = os.getcwd()
-
-# Download the zip folder
-wget.download(pascal_url, pascal_zip_filepath)
-
-# Unzip the folder
-pascal_zip = os.path.join(pascal_zip_filepath, "pascalvocsp.zip")
-
-with zipfile.ZipFile(pascal_zip, 'r') as zip_ref:
-    zip_ref.extractall(pascal_zip_filepath)
-
-# load the pascal dataset train.pt
-with open(os.path.join(pascal_zip_filepath, "voc_superpixels_edge_wt_region_boundary", "test.pickle"), 'rb') as f:
-    pascal = pickle.load(f)
-
-# load coco dataset from url to the current directory using os and wget
-coco_url = 'https://www.dropbox.com/s/r6ihg1f4pmyjjy0/cocosp.zip?dl=1'
-coco_zip_filepath = os.getcwd()
-
-# Download the zip folder
-wget.download(coco_url, coco_zip_filepath)
-
-# Unzip the folder
-coco_zip = os.path.join(coco_zip_filepath, "cocosp.zip")
-
-with zipfile.ZipFile(coco_zip, 'r') as zip_ref:
-    zip_ref.extractall(coco_zip_filepath)
-
-# load the coco dataset train.pt
-with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_boundary", "test.pickle"), 'rb') as f:
-    coco = pickle.load(f)
-"""
 
 # load encoded datasets
 # imdb_encoded = torch.load("data/imdb_encoded.pt")
@@ -91,7 +57,7 @@ with open(os.path.join(coco_zip_filepath, "coco_superpixels_edge_wt_region_bound
 # proteins_encoded = torch.load("data/proteins_encoded.pt")
 # print("IMDB ENCODED LOADED")
 
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides}
 # datasets = {"enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 # datasets = {"collab": collab, "reddit": reddit}
 
@@ -490,18 +456,19 @@ for key in datasets:
             #print(f"Graph dictionary for {key} pickled")
 
     #else:
-    if args.encoding == 'VN-k':
-        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
-            pickle.dump(graph_dict, f)
-            print(f"Graph dictionary for {key} pickled")
-    elif args.rewiring is None:
-        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
-            pickle.dump(graph_dict, f)
-            print(f"Graph dictionary for {key} pickled")
-    else:
-        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.rewiring}_graph_dict.pickle", "wb") as f:
-            pickle.dump(graph_dict, f)
-            print(f"Graph dictionary for {key} pickled")
+    
+    # if args.encoding == 'VN-k':
+        # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
+            # pickle.dump(graph_dict, f)
+            # print(f"Graph dictionary for {key} pickled")
+    # elif args.rewiring is None:
+        # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+            # pickle.dump(graph_dict, f)
+            # print(f"Graph dictionary for {key} pickled")
+    # else:
+        # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.rewiring}_graph_dict.pickle", "wb") as f:
+            # pickle.dump(graph_dict, f)
+            # print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
