@@ -320,7 +320,7 @@ for key in datasets:
             for i in range(len(dataset)):
                 encoding_method = SelectiveEncoding.select_lcp(dataset[i], dataset_properties)
                 if encoding_method == "lcp":
-                    dataset[i] = lcp.compute_orc(dataset[i])
+                    dataset[i] = lcp.compute_orc(data=dataset[i])
                     print(f"Graph {i} of {len(dataset)} encoded with {args.encoding}")
                 else:
                     dataset[i] = SelectiveEncoding.add_zeroes(dataset[i], 5)
