@@ -271,15 +271,7 @@ for key in datasets:
     energies = []
     print(f"TESTING: {key} ({args.rewiring} - layer {args.layer_type})")
 
-    if key in ["peptides", "pascal", "coco"]:
-        dataset = [_convert_lrgb(datasets[key][i]) for i in range(len(datasets[key]))]
-
-        # only use every 10th element if the key is coco
-        if key == "coco":
-            dataset = dataset[::10]
-
-    else:
-        dataset = datasets[key]
+    dataset = datasets[key]
     
     
     # encode the dataset using the given encoding, if args.encoding is not None
