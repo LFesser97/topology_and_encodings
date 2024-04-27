@@ -24,6 +24,14 @@ import wget
 import zipfile
 import os
 
+def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
+    x = dataset[0]
+    edge_attr = dataset[1]
+    edge_index = dataset[2]
+    y = dataset[3]
+
+    return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
+
 
 mutag = list(TUDataset(root="data", name="MUTAG"))
 enzymes = list(TUDataset(root="data", name="ENZYMES"))
@@ -36,28 +44,18 @@ reddit = list(TUDataset(root="data", name="REDDIT-BINARY"))
 peptides_url = "https://www.dropbox.com/s/ycsq37q8sxs1ou8/peptidesfunc.zip?dl=1"
 peptides_zip_filepath = os.getcwd()
 
-# Download the zip folder
 wget.download(peptides_url, peptides_zip_filepath)
-
-# Unzip the folder
 pepties_zip = os.path.join(peptides_zip_filepath, "peptidesfunc.zip")
 
 with zipfile.ZipFile(pepties_zip, 'r') as zip_ref:
     zip_ref.extractall(peptides_zip_filepath)
 
-# load the peptides dataset train.pt
 peptides_train = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "train.pt"))
 peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "val.pt"))
 peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
 
 peptides = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))] + [_convert_lrgb(peptides_val[i]) for i in range(len(peptides_val))] + [_convert_lrgb(peptides_test[i]) for i in range(len(peptides_test))]
 
-# load encoded datasets
-# imdb_encoded = torch.load("data/imdb_encoded.pt")
-# print("IMDB ENCODED LOADED")
-
-# proteins_encoded = torch.load("data/proteins_encoded.pt")
-# print("IMDB ENCODED LOADED")
 
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides}
 datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb,
@@ -86,14 +84,6 @@ def log_to_file(message, filename="results/graph_classification.txt"):
     file = open(filename, "a")
     file.write(message)
     file.close()
-
-def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
-    x = dataset[0]
-    edge_attr = dataset[1]
-    edge_index = dataset[2]
-    y = dataset[3]
-
-    return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
 
 class SelectiveEncoding:
     """
