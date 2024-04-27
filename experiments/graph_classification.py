@@ -206,7 +206,7 @@ class Experiment:
                 # check if y contains more than one element
                 if y.dim() > 1:
                     loss = self.loss_fn(input=out, target=y)
-                    total_correct += loss
+                    total_correct -= loss
                 else:
                     _, pred = out.max(dim=1)
                     total_correct += pred.eq(y).sum().item()
