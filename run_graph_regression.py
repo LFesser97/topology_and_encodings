@@ -455,9 +455,6 @@ for key in datasets:
     print('TRAINING STARTED...')
     start = time.time()
 
-    """
-    NEED TO ADJUST THIS TO THE REGRESSION SETTING.
-    """
     for trial in range(args.num_trials):
         train_acc, validation_acc, test_acc, energy, dictionary = Experiment(args=args, dataset=dataset).run()
         train_accuracies.append(train_acc)
