@@ -201,11 +201,11 @@ default_args = AttrDict({
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
     "display": True,
-    "num_trials": 400,
+    "num_trials": 100,
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 1,
-    "patience": 30,
+    "patience": 100,
     "output_dim": 2,
     "alpha": 0.1,
     "eps": 0.001,
@@ -466,6 +466,11 @@ for key in datasets:
                 graph_dict[name].append(dictionary[name])
     end = time.time()
     run_duration = end - start
+
+    # pickle the graph dictionary in a new file depending on the dataset and layer type
+    with open(f"results/graph_dict_{key}_{args.layer_type}_{args.rewiring}_{args.encoding}.pkl", "wb") as f:
+        pickle.dump(graph_dict, f)
+        print(f"Graph dictionary for {key} pickled")
 
     train_mean = np.mean(train_accuracies)
     val_mean = np.mean(validation_accuracies)
