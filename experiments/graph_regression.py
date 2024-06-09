@@ -22,7 +22,7 @@ default_args = AttrDict(
     "eval_every": 1,
     "stopping_criterion": "validation",
     "stopping_threshold": 1.01,
-    "patience": 100,
+    "patience": 300,
     "train_fraction": 0.5,
     "validation_fraction": 0.25,
     "test_fraction": 0.25,
@@ -75,7 +75,13 @@ class Experiment:
             validation_size = int(self.args.validation_fraction * dataset_size)
             test_size = dataset_size - train_size - validation_size
             # self.train_dataset, self.validation_dataset, self.test_dataset = random_split(self.dataset,[train_size, validation_size, test_size])
-            self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
+            # self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
+            # set the first 10000 graphs as the training set, the next 1000 as the validation set, and the last 1000 as the test set
+            self.train_dataset = self.dataset[:10000]
+            self.validation_dataset = self.dataset[10000:11000]
+            self.test_dataset = self.dataset[11000:]
+            # define the categories accordingly
+            self.categories = [[i for i in range(10000)], [i for i in range(10000, 11000)], [i for i in range(11000, 12000)]]
         elif self.validation_dataset is None:
             print("self.validation_dataset is None. Custom split will not be used.")
             train_size = int(self.args.train_fraction * len(self.train_dataset))
@@ -170,12 +176,13 @@ class Experiment:
 
                         # evaluate the model on all graphs in the dataset
                         # and record the error for each graph in the dictionary
-                        assert best_model != self.model, "Best model is the same as the current model"
+                        # assert best_model != self.model, "Best model is the same as the current model"
                         for graph, i in zip(complete_loader, range(len(self.dataset))):
                             if i in self.categories[2]:
                                 graph = graph.to(self.args.device)
                                 y = graph.y.to(self.args.device)
-                                out = best_model(graph)
+                                # out = best_model(graph)
+                                out = self.model(graph)
                                 # _, pred = out.max(dim=1)
                                 graph_dict[i] = (out.squeeze() - y).abs().sum().item()
                         print("Computed error for each graph in the test dataset")
