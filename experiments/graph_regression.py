@@ -25,7 +25,7 @@ default_args = AttrDict(
     "patience": 300,
     "train_fraction": 0.83,
     "validation_fraction": 0.083,
-    "test_fraction": 0.083,
+    "test_fraction": 1-(0.083+0.83),
     "dropout": 0.5,
     "weight_decay": 1e-5,
     "input_dim": None,
