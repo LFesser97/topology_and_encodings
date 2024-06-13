@@ -67,7 +67,7 @@ class Experiment:
                 self.args.num_relations = 2
 
         if self.args.layer_type == "GINE":
-            self.model = GINE()
+            self.model = GINE().to(self.args.device)
         else:
             self.model = GNN(self.args).to(self.args.device)
        
