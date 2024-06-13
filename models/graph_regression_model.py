@@ -110,7 +110,7 @@ class GINE(torch.nn.Module):
     Create a GCN model for node classification
     with hidden layers of size 32.
     """
-    def __init__(self, channels, num_layers):
+    def __init__(self, channels=64, num_layers=4):
         super().__init__()
         
         self.node_emb = Embedding(28, channels)
