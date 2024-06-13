@@ -122,7 +122,7 @@ class Experiment:
                 graph = graph.to(self.args.device)
                 y = graph.y.to(self.args.device)
 
-                out = self.model(graph)
+                out = self.model(graph.x, graph.edge_index, graph.edge_attr, graph.batch)
                 # loss = self.loss_fn(input=out, target=y)
                 loss = (out.squeeze() - y).abs().mean()
                 total_loss += loss
@@ -184,7 +184,7 @@ class Experiment:
                                 graph = graph.to(self.args.device)
                                 y = graph.y.to(self.args.device)
                                 # out = best_model(graph)
-                                out = self.model(graph)
+                                out = self.model(graph.x, graph.edge_index, graph.edge_attr, graph.batch)
                                 # _, pred = out.max(dim=1)
                                 graph_dict[i] = (out.squeeze() - y).abs().sum().item()
                         print("Computed error for each graph in the test dataset")
@@ -212,7 +212,7 @@ class Experiment:
             for graph in loader:
                 graph = graph.to(self.args.device)
                 y = graph.y.to(self.args.device)
-                out = self.model(graph)
+                out = self.model(graph.x, graph.edge_index, graph.edge_attr, graph.batch)
                 # _, pred = out.max(dim=1)
                 total_mae += (out.squeeze() - y).abs().sum().item()
                 
