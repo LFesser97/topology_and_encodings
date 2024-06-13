@@ -140,10 +140,12 @@ class GINE(torch.nn.Module):
         # x = torch.cat((self.node_emb(x.squeeze(-1)), self.pe_lin(x_pe)), 1)
         # check if there is a gpu available
         if torch.cuda.is_available():
-            x = x.cuda()
-            edge_index = edge_index.cuda()
-            edge_attr = edge_attr.cuda()
-            batch = batch.cuda()
+            device = torch.device('cuda')
+            x.to(device)
+            edge_index.to(device)
+            edge_attr.to(device)
+            batch.to(device)
+            print('Using GPU')
         x = self.node_emb(x.squeeze(-1))
         attr = self.edge_emb(edge_attr)
 
