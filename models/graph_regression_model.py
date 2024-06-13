@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 from measure_smoothing import dirichlet_normalized
-from torch.nn import ModuleList, Dropout, ReLU
-from torch_geometric.nn import GCNConv, RGCNConv, SAGEConv, GatedGraphConv, GINConv, FiLMConv, global_mean_pool, GATConv, GINEConv
+from torch.nn import ModuleList, Dropout, ReLU, BatchNorm1d, Embedding, Linear, ModuleList, Sequential
+from torch_geometric.nn import GCNConv, RGCNConv, SAGEConv, GatedGraphConv, GINConv, FiLMConv, global_mean_pool, GATConv, GINEConv, global_add_pool
 
 class RGATConv(torch.nn.Module):
     def __init__(self, in_features, out_features, num_relations):
@@ -104,3 +104,45 @@ class GNN(torch.nn.Module):
         x = global_mean_pool(x, batch)
         return x
 
+
+class GINE(torch.nn.Module):
+    """
+    Create a GCN model for node classification
+    with hidden layers of size 32.
+    """
+    def __init__(self, channels, num_layers):
+        super().__init__()
+        
+        self.node_emb = Embedding(28, channels)
+        self.edge_emb = Embedding(4, channels)
+
+        self.convs = ModuleList()
+        for _ in range(num_layers):
+            nn = Sequential(
+                Linear(channels, channels),
+                ReLU(),
+                Linear(channels, channels),
+            )
+            conv = GINConv(nn)
+            self.convs.append(conv)       
+            
+        self.mlp = Sequential(
+            Linear(channels, channels // 2),
+            ReLU(),
+            Linear(channels // 2, channels // 4),
+            ReLU(),
+            Linear(channels // 4, 1),
+        )
+        
+
+    def forward(self, x, edge_index, edge_attr, batch):
+        # x_pe = self.pe_norm(pe)
+        # x = torch.cat((self.node_emb(x.squeeze(-1)), self.pe_lin(x_pe)), 1)
+        x = self.node_emb(x.squeeze(-1))
+        attr = self.edge_emb(edge_attr)
+
+        for conv in self.convs:
+            # x = conv(x, edge_index, batch, attr)
+            x = conv(x, edge_index)
+        x = global_add_pool(x, batch)
+        return self.mlp(x)

@@ -12,7 +12,7 @@ from math import inf
 import random
 from torch.utils.data import Dataset, Subset
 
-from models.graph_regression_model import GNN #, transformer
+from models.graph_regression_model import GNN, GINE
 
 default_args = AttrDict(
     {"learning_rate": 1e-3,
@@ -23,9 +23,9 @@ default_args = AttrDict(
     "stopping_criterion": "validation",
     "stopping_threshold": 1.01,
     "patience": 300,
-    "train_fraction": 0.5,
-    "validation_fraction": 0.25,
-    "test_fraction": 0.25,
+    "train_fraction": 0.83,
+    "validation_fraction": 0.083,
+    "test_fraction": 0.083,
     "dropout": 0.5,
     "weight_decay": 1e-5,
     "input_dim": None,
@@ -66,8 +66,10 @@ class Experiment:
             else:
                 self.args.num_relations = 2
 
-
-        self.model = GNN(self.args).to(self.args.device)
+        if self.args.layer_type == "GINE":
+            self.model = GINE(self.args).to(self.args.device)
+        else:
+            self.model = GNN(self.args).to(self.args.device)
        
         if self.test_dataset is None:
             dataset_size = len(self.dataset)
@@ -75,13 +77,13 @@ class Experiment:
             validation_size = int(self.args.validation_fraction * dataset_size)
             test_size = dataset_size - train_size - validation_size
             # self.train_dataset, self.validation_dataset, self.test_dataset = random_split(self.dataset,[train_size, validation_size, test_size])
-            # self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
+            self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
             # set the first 10000 graphs as the training set, the next 1000 as the validation set, and the last 1000 as the test set
-            self.train_dataset = self.dataset[:10000]
-            self.validation_dataset = self.dataset[10000:11000]
-            self.test_dataset = self.dataset[11000:]
+            # self.train_dataset = self.dataset[:10000]
+            # self.validation_dataset = self.dataset[10000:11000]
+            # self.test_dataset = self.dataset[11000:]
             # define the categories accordingly
-            self.categories = [[i for i in range(10000)], [i for i in range(10000, 11000)], [i for i in range(11000, 12000)]]
+            # self.categories = [[i for i in range(10000)], [i for i in range(10000, 11000)], [i for i in range(11000, 12000)]]
         elif self.validation_dataset is None:
             print("self.validation_dataset is None. Custom split will not be used.")
             train_size = int(self.args.train_fraction * len(self.train_dataset))
