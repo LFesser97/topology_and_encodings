@@ -201,7 +201,7 @@ default_args = AttrDict({
     "learning_rate": 1e-3,
     "layer_type": "GINE",
     "display": True,
-    "num_trials": 100,
+    "num_trials": 15,
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 1,
@@ -456,6 +456,7 @@ for key in datasets:
     start = time.time()
 
     for trial in range(args.num_trials):
+        print(f"Trial {trial + 1} of {args.num_trials}")
         train_acc, validation_acc, test_acc, energy, dictionary = Experiment(args=args, dataset=dataset).run()
         train_accuracies.append(train_acc)
         validation_accuracies.append(validation_acc)
