@@ -222,7 +222,7 @@ class SelectiveRewiring:
 
 default_args = AttrDict({
     "dropout": 0.5,
-    "num_layers": 4,
+    "num_layers": 2,
     "hidden_dim": 64,
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
@@ -231,7 +231,7 @@ default_args = AttrDict({
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 1,
-    "patience": 30,
+    "patience": 50,
     "output_dim": 2,
     "alpha": 0.1,
     "eps": 0.001,
@@ -489,25 +489,25 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file depending on the number of layers 
-    #if args.num_layers == 4:
-        #with open(f"new_results/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
-           #pickle.dump(graph_dict, f)
-            #print(f"Graph dictionary for {key} pickled")
+    # if args.num_layers == 4:
+        # with open(f"new_results/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+           # pickle.dump(graph_dict, f)
+        # print(f"Graph dictionary for {key} pickled")
 
-    #else:
+    # else:
     
     # if args.encoding == 'VN-k':
         # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
             # pickle.dump(graph_dict, f)
             # print(f"Graph dictionary for {key} pickled")
-    # elif args.rewiring is None:
-        # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
-            # pickle.dump(graph_dict, f)
-            # print(f"Graph dictionary for {key} pickled")
-    # else:
-        # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.rewiring}_graph_dict.pickle", "wb") as f:
-            # pickle.dump(graph_dict, f)
-            # print(f"Graph dictionary for {key} pickled")
+    if args.rewiring is None:
+        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
+            pickle.dump(graph_dict, f)
+        print(f"Graph dictionary for {key} pickled")
+    else:
+        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.rewiring}_graph_dict.pickle", "wb") as f:
+            pickle.dump(graph_dict, f)
+        print(f"Graph dictionary for {key} pickled")
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
