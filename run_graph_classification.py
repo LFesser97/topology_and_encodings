@@ -6,7 +6,7 @@ import torch_geometric.transforms as T
 
 # import custom encodings
 from torchvision.transforms import Compose
-from custom_encodings import ShortestPathGenerator, OneHotEdgeAttr, LocalCurvatureProfile, AltLocalCurvatureProfile
+from custom_encodings import LocalCurvatureProfile, AltLocalCurvatureProfile
 
 from experiments.graph_classification import Experiment
 
