@@ -230,7 +230,7 @@ default_args = AttrDict({
     "num_trials": 400,
     "eval_every": 1,
     "rewiring": None,
-    "num_iterations": 10,
+    "num_iterations": 40,
     "patience": 50,
     "output_dim": 2,
     "alpha": 0.1,
