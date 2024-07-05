@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array of hidden_dim values
-hidden_dim_values=(4, 16, 256, 1024)
+hidden_dim_values=(4 16 256 1024)
 
 # Loop through each value and execute the command
 for hidden_dim in "${hidden_dim_values[@]}"
