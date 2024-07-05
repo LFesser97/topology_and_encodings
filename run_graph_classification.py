@@ -222,7 +222,7 @@ class SelectiveRewiring:
 
 default_args = AttrDict({
     "dropout": 0.5,
-    "num_layers": 2,
+    "num_layers": 4,
     "hidden_dim": 64,
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
@@ -508,6 +508,11 @@ for key in datasets:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.rewiring}_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
         print(f"Graph dictionary for {key} pickled")
+
+    # check if the hidden dimension is not 64
+    if args.hidden_dim != 64:
+        with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.hidden_dim}_hidden_dim_graph_dict.pickle", "wb") as f:
+            pickle.dump(graph_dict, f)
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
