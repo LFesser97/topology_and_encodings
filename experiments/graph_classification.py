@@ -12,7 +12,7 @@ from math import inf
 import random
 from torch.utils.data import Dataset, Subset
 
-from models.graph_model import GNN #, transformer
+from models.graph_model import GNN, GPS
 
 default_args = AttrDict(
     {"learning_rate": 1e-3,
@@ -66,8 +66,10 @@ class Experiment:
             else:
                 self.args.num_relations = 2
 
-
-        self.model = GNN(self.args).to(self.args.device)
+        if self.args.layer_type == "GPS":
+            self.model = GPS(self.args).to(self.args.device)
+        else:
+            self.model = GNN(self.args).to(self.args.device)
        
         if self.test_dataset is None:
             dataset_size = len(self.dataset)

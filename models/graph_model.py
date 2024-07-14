@@ -4,6 +4,24 @@ from measure_smoothing import dirichlet_normalized
 from torch.nn import ModuleList, Dropout, ReLU
 from torch_geometric.nn import GCNConv, RGCNConv, SAGEConv, GatedGraphConv, GINConv, FiLMConv, global_mean_pool, GATConv, SuperGATConv, global_max_pool, GPSConv, GINEConv, global_add_pool
 
+
+import argparse
+from typing import Any, Dict, Optional
+
+import torch.nn.functional as F
+from torch.nn import (
+    BatchNorm1d,
+    Embedding,
+    Linear,
+    ModuleList,
+    ReLU,
+    Sequential,
+)
+
+import torch_geometric.transforms as T
+from performer import PerformerAttention
+
+
 class RGATConv(torch.nn.Module):
     def __init__(self, in_features, out_features, num_relations):
         super(RGATConv, self).__init__()
@@ -105,3 +123,79 @@ class GNN(torch.nn.Module):
             return energy
         x = global_mean_pool(x, batch)
         return x
+    
+
+class GPS(torch.nn.Module):
+    def __init__(self, args):
+        super().__init__()
+        self.args = args
+        pe_dim = 20
+        channels = args.hidden_dim
+        input_dim = args.input_dim
+        num_layers = len(list(args.hidden_layers)) + 1
+        attn_type = 'performer'
+        output_dim = args.output_dim
+
+        # self.node_emb = Linear(1, channels - pe_dim)
+        self.node_emb = Linear(input_dim, channels)
+        self.pe_lin = Linear(20, pe_dim)
+        self.pe_norm = BatchNorm1d(20)
+        self.edge_emb = Embedding(4, channels)
+
+        self.convs = ModuleList()
+        for _ in range(num_layers):
+            nn = Sequential(
+                Linear(channels, channels),
+                ReLU(),
+                Linear(channels, channels),
+            )
+            conv = GPSConv(channels, GINConv(nn), heads=2)
+            self.convs.append(conv)
+
+        self.mlp = Sequential(
+            Linear(channels, channels // 2),
+            ReLU(),
+            Linear(channels // 2, channels // 4),
+            ReLU(),
+            Linear(channels // 4, output_dim),
+        )
+
+        self.redraw_projection = RedrawProjection(
+            self.convs,
+            redraw_interval=1000 if attn_type == 'performer' else None)
+
+    # def forward(self, x, pe, edge_index, edge_attr, batch):
+    def forward(self, graph):
+        x, edge_index, batch = graph.x, graph.edge_index, graph.batch
+        # x_pe = self.pe_norm(pe)
+        # x = torch.cat((self.node_emb(x.squeeze(-1)), self.pe_lin(x_pe)), 1)
+        # x = torch.cat((self.node_emb(x), self.pe_lin(x_pe)), 1)
+        x = self.node_emb(x)
+        # edge_attr = self.edge_emb(edge_attr)
+
+        for conv in self.convs:
+            x = conv(x, edge_index, batch) #, edge_attr=edge_attr)
+        x = global_add_pool(x, batch)
+        return F.log_softmax(self.mlp(x), dim=1)
+
+
+class RedrawProjection:
+    def __init__(self, model: torch.nn.Module,
+                 redraw_interval: Optional[int] = None):
+        self.model = model
+        self.redraw_interval = redraw_interval
+        self.num_last_redraw = 0
+
+    def redraw_projections(self):
+        if not self.model.training or self.redraw_interval is None:
+            return
+        if self.num_last_redraw >= self.redraw_interval:
+            fast_attentions = [
+                module for module in self.model.modules()
+                if isinstance(module, PerformerAttention)
+            ]
+            for fast_attention in fast_attentions:
+                fast_attention.redraw_projection_matrix()
+            self.num_last_redraw = 0
+            return
+        self.num_last_redraw += 1

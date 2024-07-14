@@ -154,7 +154,7 @@ class LocalCurvatureProfile(BaseTransform):
         else:
             data.x = torch.cat(lcp_pe, dim=-1)
 
-        return data    
+        return data 
     
 
     def compute_afrc_3(self, data: Data) -> Data:
