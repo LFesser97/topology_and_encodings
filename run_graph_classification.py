@@ -59,9 +59,9 @@ peptides = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))
 """
 
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides}
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb,
-            "collab": collab, "reddit": reddit}
-# datasets = {"collab": collab, "reddit": reddit}
+# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb,
+            # "collab": collab, "reddit": reddit}
+datasets = {"enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 
 num_vns = 2
 
