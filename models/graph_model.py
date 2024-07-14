@@ -19,7 +19,7 @@ from torch.nn import (
 )
 
 import torch_geometric.transforms as T
-from performer import PerformerAttention
+from models.performer import PerformerAttention
 
 
 class RGATConv(torch.nn.Module):
