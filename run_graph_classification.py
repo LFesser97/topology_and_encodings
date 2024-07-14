@@ -40,6 +40,7 @@ imdb = list(TUDataset(root="data", name="IMDB-BINARY"))
 collab = list(TUDataset(root="data", name="COLLAB"))
 reddit = list(TUDataset(root="data", name="REDDIT-BINARY"))
 
+"""
 # load peptides dataset from url to the current directory using os and wget
 peptides_url = "https://www.dropbox.com/s/ycsq37q8sxs1ou8/peptidesfunc.zip?dl=1"
 peptides_zip_filepath = os.getcwd()
@@ -55,11 +56,11 @@ peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "v
 peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
 
 peptides = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))] + [_convert_lrgb(peptides_val[i]) for i in range(len(peptides_val))] + [_convert_lrgb(peptides_test[i]) for i in range(len(peptides_test))]
-
+"""
 
 # datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides}
 datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb,
-            "collab": collab, "reddit": reddit, "peptides": peptides}
+            "collab": collab, "reddit": reddit}
 # datasets = {"collab": collab, "reddit": reddit}
 
 num_vns = 2
