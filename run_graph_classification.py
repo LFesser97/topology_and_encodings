@@ -153,7 +153,7 @@ class SelectiveRewiring:
         edge_density = SelectiveRewiring.get_edge_density(graph)
         algebraic_connectivity = SelectiveRewiring.get_algebraic_connectivity(graph)        
 
-        if algebraic_connectivity > dataset_properties['algebraic_connectivity'][0]:
+        if algebraic_connectivity < dataset_properties['algebraic_connectivity'][0]:
             return 'fosr'
         else:
             return None
