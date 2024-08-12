@@ -461,6 +461,7 @@ for key in datasets:
                     dataset[i].edge_index = torch.tensor(edge_index)
                     dataset[i].edge_type = torch.tensor(edge_type)
                     G = to_networkx(dataset[i], to_undirected=True)
+                    print("Spectral gap: ", rewiring.spectral_gap(G))
                     edges_added += 1
                 print(f"Graph {i} of {len(dataset)} rewired with {args.rewiring} ({edges_added} edges added)")
     end = time.time()
