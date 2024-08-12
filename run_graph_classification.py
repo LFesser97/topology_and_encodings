@@ -456,7 +456,7 @@ for key in datasets:
             for i in range(len(dataset)):
                 G = to_networkx(dataset[i], to_undirected=True)
                 edges_added = 0
-                while rewiring.spectral_gap(G) > target_gap:
+                while rewiring.spectral_gap(G) > target_gap and edges_added < 10:
                     edge_index, edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=1)
                     dataset[i].edge_index = torch.tensor(edge_index)
                     dataset[i].edge_type = torch.tensor(edge_type)
