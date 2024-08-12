@@ -40,27 +40,6 @@ imdb = list(TUDataset(root="data", name="IMDB-BINARY"))
 collab = list(TUDataset(root="data", name="COLLAB"))
 reddit = list(TUDataset(root="data", name="REDDIT-BINARY"))
 
-"""
-# load peptides dataset from url to the current directory using os and wget
-peptides_url = "https://www.dropbox.com/s/ycsq37q8sxs1ou8/peptidesfunc.zip?dl=1"
-peptides_zip_filepath = os.getcwd()
-
-wget.download(peptides_url, peptides_zip_filepath)
-pepties_zip = os.path.join(peptides_zip_filepath, "peptidesfunc.zip")
-
-with zipfile.ZipFile(pepties_zip, 'r') as zip_ref:
-    zip_ref.extractall(peptides_zip_filepath)
-
-peptides_train = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "train.pt"))
-peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "val.pt"))
-peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
-
-peptides = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))] + [_convert_lrgb(peptides_val[i]) for i in range(len(peptides_val))] + [_convert_lrgb(peptides_test[i]) for i in range(len(peptides_test))]
-"""
-
-# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides}
-# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb,
-            # "collab": collab, "reddit": reddit}
 datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
 
 num_vns = 2
@@ -79,6 +58,15 @@ def average_spectral_gap(dataset):
         spectral_gap = rewiring.spectral_gap(G)
         spectral_gaps.append(spectral_gap)
     return sum(spectral_gaps) / len(spectral_gaps)
+
+def median_spectral_gap(dataset):
+    # computes the median spectral gap out of all graphs in a dataset
+    spectral_gaps = []
+    for graph in dataset:
+        G = to_networkx(graph, to_undirected=True)
+        spectral_gap = rewiring.spectral_gap(G)
+        spectral_gaps.append(spectral_gap)
+    return np.median(spectral_gaps)
 
 def log_to_file(message, filename="results/graph_classification.txt"):
     print(message)
@@ -228,7 +216,7 @@ default_args = AttrDict({
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
     "display": True,
-    "num_trials": 400,
+    "num_trials": 10,
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 40,
@@ -462,6 +450,18 @@ for key in datasets:
                     dataset[i].edge_index = torch.tensor(edge_index)
                     dataset[i].edge_type = torch.tensor(edge_type)
                 pbar.update(1)
+        elif args.rewiring == "automated_fosr":
+            target_gap = median_spectral_gap(dataset)
+            for i in range(len(dataset)):
+                G = to_networkx(dataset[i], to_undirected=True)
+                edges_added = 0
+                while rewiring.spectral_gap(G) > target_gap:
+                    edge_index, edge_type, _ = fosr.edge_rewire(dataset[i].edge_index.numpy(), num_iterations=1)
+                    dataset[i].edge_index = torch.tensor(edge_index)
+                    dataset[i].edge_type = torch.tensor(edge_type)
+                    G = to_networkx(dataset[i], to_undirected=True)
+                    edges_added += 1
+                print(f"Graph {i} of {len(dataset)} rewired with {args.rewiring} ({edges_added} edges added)")
     end = time.time()
     rewiring_duration = end - start
 
