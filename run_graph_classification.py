@@ -451,7 +451,7 @@ for key in datasets:
                     dataset[i].edge_type = torch.tensor(edge_type)
                 pbar.update(1)
         elif args.rewiring == "automated_fosr":
-            target_gap = 2/3*median_spectral_gap(dataset)
+            target_gap = median_spectral_gap(dataset)
             print(f"Target spectral gap: {target_gap}")
             for i in range(len(dataset)):
                 G = to_networkx(dataset[i], to_undirected=True)
