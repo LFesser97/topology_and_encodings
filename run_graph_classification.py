@@ -452,6 +452,7 @@ for key in datasets:
                 pbar.update(1)
         elif args.rewiring == "automated_fosr":
             target_gap = median_spectral_gap(dataset)
+            print(f"Target spectral gap: {target_gap}")
             for i in range(len(dataset)):
                 G = to_networkx(dataset[i], to_undirected=True)
                 edges_added = 0
