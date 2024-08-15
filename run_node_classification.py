@@ -26,7 +26,7 @@ default_args = AttrDict({
     "display": True,
     "num_trials": 10,
     "eval_every": 1,
-    "rewiring": "fosr",
+    "rewiring": None,
     "num_iterations": 50,
     "num_relations": 2,
     "patience": 100,
