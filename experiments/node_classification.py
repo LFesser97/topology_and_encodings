@@ -42,7 +42,8 @@ class Experiment:
         self.loss_fn = torch.nn.CrossEntropyLoss()
         # self.args.input_dim = self.dataset[0].x.shape[1]
         self.args.input_dim = self.dataset.x.shape[1]
-        self.args.output_dim = torch.amax(self.dataset[0].y).item() + 1
+        # self.args.output_dim = torch.amax(self.dataset[0].y).item() + 1
+        self.args.output_dim = torch.amax(self.dataset.y).item() + 1
         # self.num_nodes = self.dataset[0].x.size(axis=0)
         self.num_nodes = self.dataset.x.size(axis=0)
 
