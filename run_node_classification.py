@@ -4,6 +4,7 @@ from torch_geometric.utils import to_networkx, from_networkx, to_undirected, dro
 from torch_geometric.transforms import LargestConnectedComponents, ToUndirected
 from experiments.node_classification import Experiment
 
+import pickle
 import time
 import torch
 import numpy as np
@@ -70,6 +71,14 @@ if args.encoding in ["LAPE", "RWPE", "LCP", "LDP", "SUB", "EGO"]:
         print(f"Encoding Local Curvature Profile (ORC)")
 
 
+# load hypergraph datasets
+with open("citeseer_clique_expansion.pickle", "rb") as f:
+    citeseer_clique_expansion = pickle.load(f)
+
+with open("cora_clique_expansion.pickle", "rb") as f:
+    cora_clique_expansion = pickle.load(f)
+
+"""
 if args.encoding in ["LCP", "LAPE", "RWPE", "LDP", "SUB", "EGO"]:
     largest_cc = LargestConnectedComponents()
     cornell = WebKB(root="data", name="Cornell", transform=transform)
@@ -99,10 +108,11 @@ else:
     # minesweeper = HeterophilousGraphDataset(root="data", name="Minesweeper", transform=largest_cc)
     # tolokers = HeterophilousGraphDataset(root="data", name="Tolokers", transform=largest_cc)
     # questions = HeterophilousGraphDataset(root="data", name="Questions", transform=largest_cc)
+    # load citeseer_clique_expansion.pickle and cora_clique_expansion.pickle
+"""
 
-datasets = {"cornell": cornell, "wisconsin": wisconsin, "texas": texas, 
-            "chameleon": chameleon, "cora": cora, "citeseer": citeseer, "pubmed": pubmed}
-
+#datasets = {"cornell": cornell, "wisconsin": wisconsin, "texas": texas, "chameleon": chameleon, "cora": cora, "citeseer": citeseer, "pubmed": pubmed}
+datasets = {"cora_ce": cora_clique_expansion, "citeseer_ce": citeseer_clique_expansion}
 
 for key in datasets:
     dataset = datasets[key]
@@ -125,6 +135,12 @@ for key in datasets:
     accuracies = []
     print(f"TESTING: {key} ({args.rewiring})")
     dataset = datasets[key]
+    
+    if key in ["cora_ce", "citeseer_ce"]:
+        if args.encoding in ["LCP", "LAPE", "RWPE", "LDP", "SUB", "EGO"]:
+           dataset.data.edge_index = to_undirected(dataset.data.edge_index)
+           dataset= transform(dataset)
+           print(f"Transformed {key} with {args.encoding}")
 
     start = time.time()
     if args.rewiring == "fosr":
