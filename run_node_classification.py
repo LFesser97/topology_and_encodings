@@ -116,7 +116,7 @@ datasets = {"cora_ce": cora_clique_expansion, "citeseer_ce": citeseer_clique_exp
 
 for key in datasets:
     dataset = datasets[key]
-    dataset.data.edge_index = to_undirected(dataset.data.edge_index)
+    # dataset.data.edge_index = to_undirected(dataset.data.edge_index)
 
 def log_to_file(message, filename="results/node_classification.txt"):
     print(message)
