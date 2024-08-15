@@ -138,7 +138,6 @@ for key in datasets:
     
     if key in ["cora_ce", "citeseer_ce"]:
         if args.encoding in ["LCP", "LAPE", "RWPE", "LDP", "SUB", "EGO"]:
-           dataset.data.edge_index = to_undirected(dataset.data.edge_index)
            dataset= transform(dataset)
            print(f"Transformed {key} with {args.encoding}")
 
