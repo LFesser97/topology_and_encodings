@@ -40,9 +40,11 @@ class Experiment:
         self.validation_mask = validation_mask
         self.test_mask = test_mask
         self.loss_fn = torch.nn.CrossEntropyLoss()
-        self.args.input_dim = self.dataset[0].x.shape[1]
+        # self.args.input_dim = self.dataset[0].x.shape[1]
+        self.args.input_dim = self.dataset.x.shape[1]
         self.args.output_dim = torch.amax(self.dataset[0].y).item() + 1
-        self.num_nodes = self.dataset[0].x.size(axis=0)
+        # self.num_nodes = self.dataset[0].x.size(axis=0)
+        self.num_nodes = self.dataset.x.size(axis=0)
 
         if self.args.device is None:
             self.args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -74,7 +76,8 @@ class Experiment:
         best_epoch = 0
         epochs_no_improve = 0
         train_size = len(self.train_mask)
-        batch = self.dataset.data.to(self.args.device)
+        # batch = self.dataset.data.to(self.args.device)
+        batch = self.dataset.to(self.args.device)
         y = batch.y
 
         for epoch in range(self.args.max_epochs):
