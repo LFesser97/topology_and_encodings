@@ -24,15 +24,32 @@ import wget
 import zipfile
 import os
 
-path = 'data'
+def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
+    x = dataset[0]
+    edge_attr = dataset[1]
+    edge_index = dataset[2]
+    y = dataset[3]
 
+    return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
+
+
+# load zinc
+path = 'data'
 train_dataset = ZINC(path, subset=True, split='train')
 val_dataset = ZINC(path, subset=True, split='val')
 test_dataset = ZINC(path, subset=True, split='test')
-
 zinc = [train_dataset[i] for i in range(len(train_dataset))] + [val_dataset[i] for i in range(len(val_dataset))] + [test_dataset[i] for i in range(len(test_dataset))]
 
-datasets = {"zinc": zinc}
+
+# load peptides
+peptides_zip_filepath = os.getcwd()
+peptides_train = torch.load(os.path.join(peptides_zip_filepath, "peptidesstruct", "train.pt"))
+peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesstruct", "val.pt"))
+peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesstruct", "test.pt"))
+peptides_struct = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))] + [_convert_lrgb(peptides_val[i]) for i in range(len(peptides_val))] + [_convert_lrgb(peptides_test[i]) for i in range(len(peptides_test))]
+
+
+datasets = {"zinc": zinc, "peptides": peptides_struct}
 
 num_vns = 2
 
@@ -50,14 +67,6 @@ def log_to_file(message, filename="results/graph_regression.txt"):
     file = open(filename, "a")
     file.write(message)
     file.close()
-
-def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
-    x = dataset[0]
-    edge_attr = dataset[1]
-    edge_index = dataset[2]
-    y = dataset[3]
-
-    return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
 
 class SelectiveEncoding:
     """
@@ -217,21 +226,9 @@ default_args = AttrDict({
     "encoding" : None
 })
 
-hyperparams = {"zinc": AttrDict({"output_dim": 1})}
+hyperparams = {"zinc": AttrDict({"output_dim": 1}),
+                "peptides": AttrDict({"output_dim": 11})}
 
-"""
-hyperparams = {
-    "mutag": AttrDict({"output_dim": 2}),
-    "enzymes": AttrDict({"output_dim": 6}),
-    "proteins": AttrDict({"output_dim": 2}),
-    "collab": AttrDict({"output_dim": 3}),
-    "imdb": AttrDict({"output_dim": 2}),
-    "reddit": AttrDict({"output_dim": 2}),
-    "peptides": AttrDict({"output_dim": 10}),
-    "pascal": AttrDict({"output_dim": 20}),
-    "coco": AttrDict({"output_dim": 80})
-}
-"""
 
 results = []
 args = default_args
