@@ -195,8 +195,8 @@ class SelectiveRewiring:
         return rewiring.spectral_gap(to_networkx(graph).to_undirected())
 
 default_args = AttrDict({
-    "dropout": 0.5,
-    "num_layers": 4,
+    "dropout": 0.1,
+    "num_layers": 16,
     "hidden_dim": 64,
     "learning_rate": 1e-3,
     "layer_type": "GINE",
@@ -205,7 +205,7 @@ default_args = AttrDict({
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 1,
-    "patience": 150,
+    "patience": 200,
     "output_dim": 2,
     "alpha": 0.1,
     "eps": 0.001,
