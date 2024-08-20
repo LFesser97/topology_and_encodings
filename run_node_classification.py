@@ -236,3 +236,6 @@ for key in datasets:
     results_df = pd.DataFrame(results)
     with open(f'results/node_classification_{args.layer_type}_{args.rewiring}.csv', 'a') as f:
         results_df.to_csv(f, mode='a', header=f.tell()==0)
+
+
+# take the union over a list of sets
