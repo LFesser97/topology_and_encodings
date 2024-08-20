@@ -32,7 +32,7 @@ def _convert_lrgb(dataset: torch.Tensor) -> torch.Tensor:
 
     return Data(x = x, edge_index = edge_index, y = y, edge_attr = edge_attr)
 
-
+# import TU datasets
 mutag = list(TUDataset(root="data", name="MUTAG"))
 enzymes = list(TUDataset(root="data", name="ENZYMES"))
 proteins = list(TUDataset(root="data", name="PROTEINS"))
@@ -40,7 +40,15 @@ imdb = list(TUDataset(root="data", name="IMDB-BINARY"))
 collab = list(TUDataset(root="data", name="COLLAB"))
 reddit = list(TUDataset(root="data", name="REDDIT-BINARY"))
 
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb}
+# import peptides-func dataset
+peptides_zip_filepath = os.getcwd()
+peptides_train = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "train.pt"))
+peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "val.pt"))
+peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
+peptides_func = [_convert_lrgb(peptides_train), _convert_lrgb(peptides_val), _convert_lrgb(peptides_test)]
+
+
+datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides_func}
 
 num_vns = 2
 
