@@ -59,6 +59,7 @@ class Experiment:
                 self.args.input_dim = self.dataset[0].x.shape[1]
             except:
                 self.args.input_dim = 9 # peptides-func
+        print(self.dataset[:20])
         for graph in self.dataset:
             print(graph)
             if not "edge_type" in graph.keys:
