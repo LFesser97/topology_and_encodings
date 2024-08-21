@@ -109,28 +109,41 @@ class GINE(torch.nn.Module):
     Create a GCN model for node classification
     with hidden layers of size 32.
     """
-    def __init__(self, channels=64, num_layers=4):
+    # def __init__(self, channels=64, num_layers=4):
+    def __init__(self, args):
         super().__init__()
+        self.args = args
+        hidden_dim = args.hidden_dim
+        num_layers = args.num_layers
+        input_dim = args.input_dim
+        output_dim = args.output_dim
+        if output_dim == 1:
+            # zinc
+            edge_dim = 4
+        else:
+            # peptides-struct
+            edge_dim = 3
         
-        self.node_emb = Embedding(28, channels)
-        self.edge_emb = Embedding(4, channels)
+        self.node_emb = Embedding(input_dim, hidden_dim)
+        self.edge_emb = Embedding(edge_dim, hidden_dim)
 
         self.convs = ModuleList()
         for _ in range(num_layers):
             nn = Sequential(
-                Linear(channels, channels),
+                Linear(hidden_dim, hidden_dim),
                 ReLU(),
-                Linear(channels, channels),
+                Linear(hidden_dim, hidden_dim),
             )
             conv = GINConv(nn)
+            # conv = GINEConv(nn)
             self.convs.append(conv)       
             
         self.mlp = Sequential(
-            Linear(channels, channels // 2),
+            Linear(hidden_dim, hidden_dim // 2),
             ReLU(),
-            Linear(channels // 2, channels // 4),
+            Linear(hidden_dim // 2, hidden_dim // 4),
             ReLU(),
-            Linear(channels // 4, 1),
+            Linear(hidden_dim // 4, output_dim),
         )
         
 
