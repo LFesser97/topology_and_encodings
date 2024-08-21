@@ -124,6 +124,7 @@ class GINE(torch.nn.Module):
         super().__init__()
         self.args = args
         hidden_dim = args.hidden_dim
+        print("hidden_dim", hidden_dim)
         num_layers = args.num_layers
         input_dim = args.input_dim
         output_dim = args.output_dim
