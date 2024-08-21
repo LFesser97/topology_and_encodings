@@ -134,7 +134,6 @@ class GINE(torch.nn.Module):
             # peptides-struct
             input_dim = 9
             edge_dim = 3
-        print("edge_dim", edge_dim)
         
         self.node_emb = Embedding(input_dim, hidden_dim)
         self.edge_emb = Embedding(edge_dim, hidden_dim)

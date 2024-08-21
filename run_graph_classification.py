@@ -237,7 +237,8 @@ default_args = AttrDict({
     "borf_batch_add" : 20,
     "borf_batch_remove" : 3,
     "sdrf_remove_edges" : False,
-    "encoding" : None
+    "encoding" : None,
+    "mlp": True
 })
 
 hyperparams = {

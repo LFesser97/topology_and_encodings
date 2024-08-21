@@ -62,6 +62,7 @@ class GNN(torch.nn.Module):
     def __init__(self, args):
         super(GNN, self).__init__()
         self.args = args
+        self.final_layer = args.mlp
         self.num_relations = args.num_relations
         self.layer_type = args.layer_type
         num_features = [args.input_dim] + list(args.hidden_layers) + [args.output_dim]
@@ -80,6 +81,14 @@ class GNN(torch.nn.Module):
                 self.last_layer_transform = nn.Sequential(nn.Linear(self.args.hidden_dim, self.args.hidden_dim),nn.BatchNorm1d(self.args.hidden_dim), nn.ReLU(),nn.Linear(self.args.hidden_dim, self.args.output_dim))
             else:
                 raise NotImplementedError
+            
+        self.mlp = Sequential(
+            Linear(self.args.hidden_dim, self.args.hidden_dim // 2),
+            ReLU(),
+            Linear(self.args.hidden_dim // 2, self.args.hidden_dim // 4),
+            ReLU(),
+            Linear(self.args.hidden_dim // 4, self.args.output_dim),
+        )
 
     def get_layer(self, in_features, out_features):
         if self.layer_type == "GCN":
@@ -122,7 +131,10 @@ class GNN(torch.nn.Module):
             energy = dirichlet_normalized(x.cpu().numpy(), graph.edge_index.cpu().numpy())
             return energy
         x = global_mean_pool(x, batch)
-        return x
+        if self.final_layer:
+            return self.mlp(x)
+        else:
+            return x
     
 
 class GPS(torch.nn.Module):
