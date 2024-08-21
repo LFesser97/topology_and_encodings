@@ -7,6 +7,7 @@ from attrdict import AttrDict
 from torch_geometric.loader import DataLoader
 from torch.utils.data import random_split
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torcheval.metrics import MultilabelAUPRC
 from math import inf
 
 import random
@@ -59,9 +60,7 @@ class Experiment:
                 self.args.input_dim = self.dataset[0].x.shape[1]
             except:
                 self.args.input_dim = 9 # peptides-func
-        print(self.dataset[:20])
         for graph in self.dataset:
-            print(graph)
             if not "edge_type" in graph.keys:
                 num_edges = graph.edge_index.shape[1]
                 graph.edge_type = torch.zeros(num_edges, dtype=int)
@@ -131,9 +130,14 @@ class Experiment:
             new_best_str = ''
             scheduler.step(total_loss)
             if epoch % self.args.eval_every == 0:
-                train_acc = self.eval(loader=train_loader)
-                validation_acc = self.eval(loader=validation_loader)
-                test_acc = self.eval(loader=test_loader)
+                if self.args.output_dim == 10: # peptides-func
+                    train_acc = self.test(loader=train_loader)
+                    validation_acc = self.test(loader=validation_loader)
+                    test_acc = self.test(loader=test_loader)
+                else:
+                    train_acc = self.eval(loader=train_loader)
+                    validation_acc = self.eval(loader=validation_loader)
+                    test_acc = self.eval(loader=test_loader)
 
                 if self.args.stopping_criterion == "train":
                     if train_acc > train_goal:
@@ -219,6 +223,23 @@ class Experiment:
                     total_correct += pred.eq(y).sum().item()
                 
         return total_correct / sample_size
+    
+    @torch.no_grad()
+    def test(self, loader):
+        self.model.eval()
+        metric = MultilabelAUPRC(num_labels=10)
+
+        total_error = 0
+        for data in loader:
+            error = 0
+            data = data.to(self.device)
+            out = self.model(data)
+            # error_fnc = torch.nn.CrossEntropyLoss()
+            # error += error_fnc(out, data.y)
+            metric.update(out, data.y)
+            error += metric.compute()
+            total_error += error.item() * data.num_graphs
+        return total_error / len(loader.dataset)
     
     def check_dirichlet(self, loader):
         self.model.eval()
