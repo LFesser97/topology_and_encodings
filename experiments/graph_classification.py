@@ -55,7 +55,10 @@ class Experiment:
         if self.args.hidden_layers is None:
             self.args.hidden_layers = [self.args.hidden_dim] * self.args.num_layers
         if self.args.input_dim is None:
-            self.args.input_dim = self.dataset[0].x.shape[1]
+            try:
+                self.args.input_dim = self.dataset[0].x.shape[1]
+            except:
+                self.args.input_dim = 9 # peptides-func
         for graph in self.dataset:
             if not "edge_type" in graph.keys:
                 num_edges = graph.edge_index.shape[1]
