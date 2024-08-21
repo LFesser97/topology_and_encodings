@@ -232,7 +232,7 @@ class Experiment:
         total_error = 0
         for data in loader:
             error = 0
-            data = data.to(self.device)
+            data = data.to(self.args.device)
             out = self.model(data)
             # error_fnc = torch.nn.CrossEntropyLoss()
             # error += error_fnc(out, data.y)
