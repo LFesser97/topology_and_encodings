@@ -45,8 +45,7 @@ peptides_zip_filepath = os.getcwd()
 peptides_train = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "train.pt"))
 peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "val.pt"))
 peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
-peptides_func = [_convert_lrgb(peptides_train), _convert_lrgb(peptides_val), _convert_lrgb(peptides_test)]
-
+peptides_func = [_convert_lrgb(peptides_train)] + [_convert_lrgb(peptides_val)] + [_convert_lrgb(peptides_test)]
 
 datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides_func}
 
