@@ -60,6 +60,7 @@ class Experiment:
             except:
                 self.args.input_dim = 9 # peptides-func
         for graph in self.dataset:
+            print(graph)
             if not "edge_type" in graph.keys:
                 num_edges = graph.edge_index.shape[1]
                 graph.edge_type = torch.zeros(num_edges, dtype=int)
