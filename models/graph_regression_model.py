@@ -46,7 +46,8 @@ class GNN(torch.nn.Module):
         self.args = args
         self.num_relations = args.num_relations
         self.layer_type = args.layer_type
-        num_features = [args.input_dim] + list(args.hidden_layers) + [args.output_dim]
+        self.hidden_dim = args.hidden_dim
+        num_features = [args.input_dim] + list(args.hidden_layers)# + [args.output_dim]
         self.num_layers = len(num_features) - 1
         layers = []
         for i, (in_features, out_features) in enumerate(zip(num_features[:-1], num_features[1:])):
@@ -62,6 +63,14 @@ class GNN(torch.nn.Module):
                 self.last_layer_transform = nn.Sequential(nn.Linear(self.args.hidden_dim, self.args.hidden_dim),nn.BatchNorm1d(self.args.hidden_dim), nn.ReLU(),nn.Linear(self.args.hidden_dim, self.args.output_dim))
             else:
                 raise NotImplementedError
+            
+        self.mlp = Sequential(
+            Linear(self.hidden_dim, self.hidden_dim // 2),
+            ReLU(),
+            Linear(self.hidden_dim // 2, self.hidden_dim // 4),
+            ReLU(),
+            Linear(self.hidden_dim // 4, self.args.output_dim),
+        )
 
     def get_layer(self, in_features, out_features):
         if self.layer_type == "GCN":
@@ -101,7 +110,8 @@ class GNN(torch.nn.Module):
             energy = dirichlet_normalized(x.cpu().numpy(), graph.edge_index.cpu().numpy())
             return energy
         x = global_mean_pool(x, batch)
-        return x
+        return self.mlp(x)
+        # return x
 
 
 class GINE(torch.nn.Module):
