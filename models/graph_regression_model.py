@@ -124,18 +124,15 @@ class GINE(torch.nn.Module):
         super().__init__()
         self.args = args
         hidden_dim = args.hidden_dim
-        # print("hidden_dim", hidden_dim)
         num_layers = args.num_layers
-        # print("num_layers", num_layers)
-        input_dim = args.input_dim
-        # print("input_dim", input_dim)
         output_dim = args.output_dim
-        # print("output_dim", output_dim)
         if output_dim == 1:
             # zinc
+            input_dim = 28
             edge_dim = 4
         else:
             # peptides-struct
+            input_dim = 11
             edge_dim = 3
         print("edge_dim", edge_dim)
         
