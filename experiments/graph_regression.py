@@ -214,7 +214,9 @@ class Experiment:
                 y = graph.y.to(self.args.device)
                 out = self.model(graph.x, graph.edge_index, graph.edge_attr, graph.batch)
                 # _, pred = out.max(dim=1)
-                total_mae += (out.squeeze() - y).abs().sum().item()
+                error = (out.squeeze() - y).abs().mean()
+                total_mae += error.item() * graph.num_graphs
+                # total_mae += (out.squeeze() - y).abs().sum().item()
                 
         return total_mae / sample_size
     
