@@ -12,7 +12,7 @@ from math import inf
 import random
 from torch.utils.data import Dataset, Subset
 
-from models.graph_regression_model import GNN, GINE
+from models.graph_regression_model import GNN, GINE, GPS
 
 default_args = AttrDict(
     {"learning_rate": 1e-3,
@@ -28,7 +28,7 @@ default_args = AttrDict(
     "test_fraction": 1-(0.083+0.83),
     "dropout": 0.5,
     "weight_decay": 1e-5,
-    "input_dim": 9,
+    "input_dim": None,
     "hidden_dim": 64,
     "output_dim": None,
     "hidden_layers": None,
@@ -68,6 +68,8 @@ class Experiment:
 
         if self.args.layer_type == "GINE":
             self.model = GINE(self.args).to(self.args.device)
+        elif self.args.layer_type == "GPS":
+            self.model = GPS(self.args).to(self.args.device)
         else:
             self.model = GNN(self.args).to(self.args.device)
        

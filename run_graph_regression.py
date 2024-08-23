@@ -49,7 +49,7 @@ peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesstruct",
 peptides_struct = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))] + [_convert_lrgb(peptides_val[i]) for i in range(len(peptides_val))] + [_convert_lrgb(peptides_test[i]) for i in range(len(peptides_test))]
 
 
-datasets = {"zinc": zinc, "peptides": peptides_struct}
+datasets = {"zinc": zinc, "peptides_struct": peptides_struct}
 
 num_vns = 2
 
