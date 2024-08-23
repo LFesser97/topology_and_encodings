@@ -227,7 +227,7 @@ default_args = AttrDict({
 })
 
 hyperparams = {"zinc": AttrDict({"output_dim": 1}),
-                "peptides": AttrDict({"output_dim": 11})}
+                "peptides_struct": AttrDict({"output_dim": 11})}
 
 
 results = []
