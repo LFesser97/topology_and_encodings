@@ -199,6 +199,10 @@ class GPS(torch.nn.Module):
             edge_dim = 4
         else:
             edge_dim = 3
+        print("input_dim", input_dim)
+        print("channels", channels)
+        print("output_dim", output_dim)
+
 
         # self.node_emb = Linear(1, channels - pe_dim)
         self.node_emb = Embedding(input_dim, channels)
