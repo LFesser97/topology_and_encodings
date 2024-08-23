@@ -182,13 +182,13 @@ class Experiment:
                         # and record the error for each graph in the dictionary
                         assert best_model != self.model, "Best model is the same as the current model"
                         for graph, i in zip(complete_loader, range(len(self.dataset))):
-                            if i in self.categories[2]:
+                            if i not in self.categories[0]:
                                 graph = graph.to(self.args.device)
                                 y = graph.y.to(self.args.device)
                                 out = best_model(graph)
                                 _, pred = out.max(dim=1)
                                 graph_dict[i] = pred.eq(y).sum().item()
-                        print("Computed error for each graph in the test dataset")
+                        print("Computed error for each graph in the val and test dataset")
 
                         # save the model
                         torch.save(best_model.state_dict(), "model.pth")
