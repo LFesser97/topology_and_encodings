@@ -201,7 +201,7 @@ class GPS(torch.nn.Module):
             edge_dim = 3
 
         # self.node_emb = Linear(1, channels - pe_dim)
-        self.node_emb = Linear(input_dim, channels)
+        self.node_emb = Embedding(input_dim, channels)
         self.pe_lin = Linear(20, pe_dim)
         self.pe_norm = BatchNorm1d(20)
         self.edge_emb = Embedding(edge_dim, channels)
@@ -230,16 +230,13 @@ class GPS(torch.nn.Module):
 
     # def forward(self, x, pe, edge_index, edge_attr, batch):
     def forward(self, x, edge_index, edge_attr, batch):
-        # x_pe = self.pe_norm(pe)
-        # x = torch.cat((self.node_emb(x.squeeze(-1)), self.pe_lin(x_pe)), 1)
-        # x = torch.cat((self.node_emb(x), self.pe_lin(x_pe)), 1)
         x = self.node_emb(x.squeeze(-1))
-        # edge_attr = self.edge_emb(edge_attr)
+        attr = self.edge_emb(edge_attr)
 
         for conv in self.convs:
-            x = conv(x, edge_index, batch) #, edge_attr=edge_attr)
+            x = conv(x, edge_index)
         x = global_add_pool(x, batch)
-        return F.log_softmax(self.mlp(x), dim=1)
+        return self.mlp(x)
 
 
 class RedrawProjection:
