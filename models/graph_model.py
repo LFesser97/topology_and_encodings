@@ -185,9 +185,9 @@ class GPS(torch.nn.Module):
         # x_pe = self.pe_norm(pe)
         # x = torch.cat((self.node_emb(x.squeeze(-1)), self.pe_lin(x_pe)), 1)
         # x = torch.cat((self.node_emb(x), self.pe_lin(x_pe)), 1)
-        print(type(x))
-        print(x.shape)
-        print(x)
+        print(type(x.float()))
+        print(x.float().shape)
+        print(x.float())
         x = self.node_emb(x.float())
         # edge_attr = self.edge_emb(edge_attr)
 
