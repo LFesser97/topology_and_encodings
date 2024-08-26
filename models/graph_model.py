@@ -188,7 +188,7 @@ class GPS(torch.nn.Module):
         print(type(x))
         print(x.shape)
         print(x)
-        x = self.node_emb(x.squeeze(-1))
+        x = self.node_emb(x.float())
         # edge_attr = self.edge_emb(edge_attr)
 
         for conv in self.convs:
