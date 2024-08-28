@@ -466,7 +466,7 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file depending on the dataset and layer type
-    with open(f"results/graph_dict_{key}_{args.layer_type}_{args.rewiring}_{args.encoding}.pkl", "wb") as f:
+    with open(f"results/graph_dict_{key}_{args.layer_type}_{args.num_layers}_{args.rewiring}_{args.encoding}.pkl", "wb") as f:
         pickle.dump(graph_dict, f)
         print(f"Graph dictionary for {key} pickled")
 
