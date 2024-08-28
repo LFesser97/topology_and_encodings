@@ -85,6 +85,7 @@ class Experiment:
             self.train_dataset = self.dataset[:10873]
             self.validation_dataset = self.dataset[10873:13204]
             self.test_dataset = self.dataset[13204:]
+            self.categories = [[*range(10873)], [*range(10873, 13204)], [*range(13204, 15535)]]
         elif self.validation_dataset is None:
             print("self.validation_dataset is None. Custom split will not be used.")
             train_size = int(self.args.train_fraction * len(self.train_dataset))
