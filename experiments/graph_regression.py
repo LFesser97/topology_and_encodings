@@ -74,18 +74,17 @@ class Experiment:
             self.model = GNN(self.args).to(self.args.device)
        
         if self.test_dataset is None:
+            print("self.test_dataset is None. Custom split for Peptides will be used.")
             dataset_size = len(self.dataset)
             train_size = int(self.args.train_fraction * dataset_size)
             validation_size = int(self.args.validation_fraction * dataset_size)
             test_size = dataset_size - train_size - validation_size
             # self.train_dataset, self.validation_dataset, self.test_dataset = random_split(self.dataset,[train_size, validation_size, test_size])
-            self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
-            # set the first 10000 graphs as the training set, the next 1000 as the validation set, and the last 1000 as the test set
-            # self.train_dataset = self.dataset[:10000]
-            # self.validation_dataset = self.dataset[10000:11000]
-            # self.test_dataset = self.dataset[11000:]
-            # define the categories accordingly
-            # self.categories = [[i for i in range(10000)], [i for i in range(10000, 11000)], [i for i in range(11000, 12000)]]
+            # self.train_dataset, self.validation_dataset, self.test_dataset, self.categories = custom_random_split(self.dataset, [self.args.train_fraction, self.args.validation_fraction, self.args.test_fraction])
+            # set the first 10873 graphs as the training set, the next 2331 as the validation set, and the last 2331 as the test set
+            self.train_dataset = self.dataset[:10873]
+            self.validation_dataset = self.dataset[10873:13204]
+            self.test_dataset = self.dataset[13204:]
         elif self.validation_dataset is None:
             print("self.validation_dataset is None. Custom split will not be used.")
             train_size = int(self.args.train_fraction * len(self.train_dataset))
