@@ -466,9 +466,12 @@ for key in datasets:
     run_duration = end - start
 
     # pickle the graph dictionary in a new file depending on the dataset and layer type
+    print('NOT SAVING GRAPH DICTIONARIES AT THIS POINT')
+    """
     with open(f"results/graph_dict_{key}_{args.layer_type}_{args.num_layers}_{args.rewiring}_{args.encoding}.pkl", "wb") as f:
         pickle.dump(graph_dict, f)
         print(f"Graph dictionary for {key} pickled")
+    """
 
     train_mean = np.mean(train_accuracies)
     val_mean = np.mean(validation_accuracies)
