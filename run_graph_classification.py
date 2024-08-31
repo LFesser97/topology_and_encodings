@@ -482,6 +482,7 @@ for key in datasets:
     for i in range(len(dataset)):
        graph_dict[i] = []
     print('GRAPH DICTIONARY CREATED...') 
+    print('NOT SAVING GRAPH DICTIONARIES AT THIS TIME')
 
     
     #spectral_gap = average_spectral_gap(dataset)
@@ -511,6 +512,7 @@ for key in datasets:
         # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
             # pickle.dump(graph_dict, f)
             # print(f"Graph dictionary for {key} pickled")
+    """
     if args.rewiring is None:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
@@ -524,6 +526,7 @@ for key in datasets:
     if args.hidden_dim != 64:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.hidden_dim}_hidden_dim_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
+    """
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
