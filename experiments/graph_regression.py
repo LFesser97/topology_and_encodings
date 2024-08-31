@@ -175,7 +175,7 @@ class Experiment:
                 if epochs_no_improve > self.args.patience:
                     if self.args.display:
                         print(f'{self.args.patience} epochs without improvement, stopping training')
-                        print(f'Best train mae: {best_train_mae}, Best validation mae: {best_validation_mae}, Best test mae: {best_test_mae}')
+                        print(f'Best train mae: {train_mae}, Best validation mae: {validation_mae}, Best test mae: {test_mae}')
                         energy = 0
 
                         # evaluate the model on all graphs in the dataset
@@ -197,7 +197,7 @@ class Experiment:
                         # get the current directory and print it
                         print("Saved model in directory: ", os.getcwd())
 
-                    return best_train_mae, best_validation_mae, best_test_mae, energy, graph_dict
+                    return train_mae, validation_mae, test_mae, energy, graph_dict
                 
         if self.args.display:
             print('Reached max epoch count, stopping training')
