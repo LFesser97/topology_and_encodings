@@ -138,7 +138,7 @@ for key in datasets:
     
     if key in ["cora_ce", "citeseer_ce"]:
         if args.encoding == "RWPE":
-            dataset.data.x = torch.cat((transform(dataset.data).random_walk_pe, dataset.data.x), dim=1)
+            dataset.x = torch.cat((transform(dataset).random_walk_pe, dataset.x), dim=1)
         elif args.encoding in ["LCP", "LAPE", "LDP", "SUB", "EGO"]:
             dataset = transform(dataset)
             print(f"Transformed {key} with {args.encoding}")
