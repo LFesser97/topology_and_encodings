@@ -227,7 +227,7 @@ default_args = AttrDict({
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
     "display": True,
-    "num_trials": 400,
+    "num_trials": 100,
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 40,
@@ -531,7 +531,7 @@ for key in datasets:
     if args.hidden_dim != 64:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.hidden_dim}_hidden_dim_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
-            
+
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
