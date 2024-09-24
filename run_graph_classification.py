@@ -40,14 +40,18 @@ imdb = list(TUDataset(root="data", name="IMDB-BINARY"))
 collab = list(TUDataset(root="data", name="COLLAB"))
 reddit = list(TUDataset(root="data", name="REDDIT-BINARY"))
 
+"""
 # import peptides-func dataset
 peptides_zip_filepath = os.getcwd()
 peptides_train = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "train.pt"))
 peptides_val = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "val.pt"))
 peptides_test = torch.load(os.path.join(peptides_zip_filepath, "peptidesfunc", "test.pt"))
 peptides_func = [_convert_lrgb(peptides_train[i]) for i in range(len(peptides_train))] + [_convert_lrgb(peptides_val[i]) for i in range(len(peptides_val))] + [_convert_lrgb(peptides_test[i]) for i in range(len(peptides_test))]
+"""
 
-datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides_func}
+# datasets = {"mutag": mutag, "enzymes": enzymes, "proteins": proteins, "imdb": imdb, "peptides": peptides_func}
+
+datasets = {"enzymes": enzymes, "proteins": proteins}
 
 num_vns = 2
 
@@ -223,7 +227,7 @@ default_args = AttrDict({
     "learning_rate": 1e-3,
     "layer_type": "R-GCN",
     "display": True,
-    "num_trials": 20,
+    "num_trials": 400,
     "eval_every": 1,
     "rewiring": None,
     "num_iterations": 40,
@@ -482,13 +486,14 @@ for key in datasets:
     for i in range(len(dataset)):
        graph_dict[i] = []
     print('GRAPH DICTIONARY CREATED...') 
-    print('NOT SAVING GRAPH DICTIONARIES AT THIS TIME')
+    # print('NOT SAVING GRAPH DICTIONARIES AT THIS TIME')
 
     
     #spectral_gap = average_spectral_gap(dataset)
     print('TRAINING STARTED...')
     start = time.time()
     for trial in range(args.num_trials):
+        print(f"TRIAL {trial + 1} OF {args.num_trials}")
         train_acc, validation_acc, test_acc, energy, dictionary = Experiment(args=args, dataset=dataset).run()
         train_accuracies.append(train_acc)
         validation_accuracies.append(validation_acc)
@@ -512,7 +517,7 @@ for key in datasets:
         # with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_{num_vns}_graph_dict.pickle", "wb") as f:
             # pickle.dump(graph_dict, f)
             # print(f"Graph dictionary for {key} pickled")
-    """
+    
     if args.rewiring is None:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.encoding}_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
@@ -526,7 +531,7 @@ for key in datasets:
     if args.hidden_dim != 64:
         with open(f"results/{args.num_layers}_layers/{key}_{args.layer_type}_{args.hidden_dim}_hidden_dim_graph_dict.pickle", "wb") as f:
             pickle.dump(graph_dict, f)
-    """
+            
 
     train_mean = 100 * np.mean(train_accuracies)
     val_mean = 100 * np.mean(validation_accuracies)
